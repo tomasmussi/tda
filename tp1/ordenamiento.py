@@ -24,6 +24,7 @@ def selection_sort(lista):
 			if (lista[j] < lista[min_index]):
 				min_index = j
 		swap(lista, i, min_index)
+	return lista
 
 """
 Algoritmo de insercion
@@ -36,6 +37,7 @@ def insertion_sort(lista):
 			swap(lista, j, j-1)
 			j -=1
 		i += 1
+	return lista
 
 """
 Metodo de quicksort para particionar la lista y dejar:
@@ -64,6 +66,40 @@ def quicksort_recursive(lista, i_from, i_to):
 
 def quicksort(lista):
 	quicksort_recursive(lista, 0, len(lista) -1)
+	return lista
+
+def mergelists(left, right):
+	l = []
+	i_left = 0
+	i_right = 0
+	while (i_left < len(left) and i_right < len(right)):
+		if (left[i_left] < right[i_right]):
+			l.append(left[i_left])
+			i_left += 1
+		else:
+			l.append(right[i_right])
+			i_right += 1
+	while (i_left < len(left)):
+		l.append(left[i_left])
+		i_left += 1
+	while (i_right < len(right)):
+		l.append(right[i_right])
+		i_right += 1
+	return l
+
+def mergesort_recursive(lista):
+	#print lista
+	if (len(lista) <= 1):
+		return lista
+	middle = len(lista) / 2
+	#print lista[ : middle ]
+	#print lista[middle : ]
+	left = mergesort_recursive(lista[ : middle ])
+	right = mergesort_recursive(lista[middle : ])
+	return mergelists(left, right)
+
+def mergesort(lista):
+	return mergesort_recursive(lista)
 
 def compare(sorted_list, test):
 	if (len(sorted_list) != len(test)):
@@ -85,22 +121,24 @@ methods = {
 	"seleccion" : selection_sort,
 	"insercion" : insertion_sort,
 	"quicksort" : quicksort,
+	"mergesort" : mergesort,
 }
 
 
 def evaluate_method(method, n = 10):
 	l,x = list_test(n)
 	start = time.time()
-	methods[method](x)
+	x = methods[method](x)
 	end = time.time()
 	assert(compare(l,x))
 	elapsed = end - start
-	print str(elapsed) + " segundos"
+	print method + " tardo en ordenar " + str(n) + " elementos " + str(elapsed) + " segundos"
 
 def main():
-	#evaluate_method("seleccion", 10000)
-	#evaluate_method("insercion", 10000)
-	evaluate_method("quicksort", 1000000)
+	evaluate_method("seleccion", 1000)
+	evaluate_method("insercion", 1000)
+	evaluate_method("quicksort", 100000)
+	evaluate_method("mergesort", 100000)
 
 if __name__ == '__main__':
 	main()
