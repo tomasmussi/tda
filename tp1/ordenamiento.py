@@ -1,8 +1,7 @@
 import time
 from random import shuffle
+import heapq as hp
 
-from heap import Heap
-#from random import randint
 
 DEBUG = False
 
@@ -101,13 +100,12 @@ def mergesort(lista):
 	return mergesort_recursive(lista)
 
 
-def heapsort(lista):
-	heap = Heap(lista)
-	new_list = []
-	while (not heap.empty()):
-		element = heap.pop()
-		new_list.append(element)
-	return new_list
+def heapsort(iterable):
+	h = []
+	for value in iterable:
+		hp.heappush(h, value)
+	return [hp.heappop(h) for i in xrange(len(h))]
+
 
 def compare(sorted_list, test):
 	if (len(sorted_list) != len(test)):
