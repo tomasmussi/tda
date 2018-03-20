@@ -1,5 +1,7 @@
 import time
 from random import shuffle
+
+from heap import Heap
 #from random import randint
 
 DEBUG = False
@@ -88,18 +90,20 @@ def mergelists(left, right):
 	return l
 
 def mergesort_recursive(lista):
-	#print lista
 	if (len(lista) <= 1):
 		return lista
 	middle = len(lista) / 2
-	#print lista[ : middle ]
-	#print lista[middle : ]
 	left = mergesort_recursive(lista[ : middle ])
 	right = mergesort_recursive(lista[middle : ])
 	return mergelists(left, right)
 
 def mergesort(lista):
 	return mergesort_recursive(lista)
+
+
+def heapsort(lista):
+	heap = Heap(lista)
+	return heap.heapsort()
 
 def compare(sorted_list, test):
 	if (len(sorted_list) != len(test)):
@@ -122,6 +126,7 @@ methods = {
 	"insercion" : insertion_sort,
 	"quicksort" : quicksort,
 	"mergesort" : mergesort,
+	"heapsort" : heapsort
 }
 
 
@@ -139,6 +144,7 @@ def main():
 	evaluate_method("insercion", 1000)
 	evaluate_method("quicksort", 100000)
 	evaluate_method("mergesort", 100000)
+	evaluate_method("heapsort", 100000)
 
 if __name__ == '__main__':
 	main()
