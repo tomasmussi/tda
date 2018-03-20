@@ -103,7 +103,11 @@ def mergesort(lista):
 
 def heapsort(lista):
 	heap = Heap(lista)
-	return heap.heapsort()
+	new_list = []
+	while (not heap.empty()):
+		element = heap.pop()
+		new_list.append(element)
+	return new_list
 
 def compare(sorted_list, test):
 	if (len(sorted_list) != len(test)):
@@ -140,11 +144,11 @@ def evaluate_method(method, n = 10):
 	print method + " tardo en ordenar " + str(n) + " elementos " + str(elapsed) + " segundos"
 
 def main():
-	evaluate_method("seleccion", 1000)
-	evaluate_method("insercion", 1000)
-	evaluate_method("quicksort", 100000)
-	evaluate_method("mergesort", 100000)
-	evaluate_method("heapsort", 100000)
+	#evaluate_method("seleccion", 1000)
+	#evaluate_method("insercion", 1000)
+	#evaluate_method("quicksort", 100000)
+	#evaluate_method("mergesort", 100000)
+	evaluate_method("heapsort", 10)
 
 if __name__ == '__main__':
 	main()
