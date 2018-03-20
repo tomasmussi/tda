@@ -144,11 +144,11 @@ def evaluate_method(method, n = 10):
 	print method + " tardo en ordenar " + str(n) + " elementos " + str(elapsed) + " segundos"
 
 def main():
-	#evaluate_method("seleccion", 1000)
-	#evaluate_method("insercion", 1000)
-	#evaluate_method("quicksort", 100000)
-	#evaluate_method("mergesort", 100000)
-	evaluate_method("heapsort", 10)
+	evaluate_method("seleccion", 1000)
+	evaluate_method("insercion", 1000)
+	evaluate_method("quicksort", 100000)
+	evaluate_method("mergesort", 100000)
+	evaluate_method("heapsort", 100000)
 
 if __name__ == '__main__':
 	main()

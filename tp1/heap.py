@@ -8,9 +8,7 @@ class Heap(object):
 
 	def __init__(self, alist = []):
 		self.heap = alist or []
-		print self.heap
 		self.heapify()
-		print self.heap
 
 	def swap(self, i, j):
 		aux = self.heap[i]
@@ -64,6 +62,7 @@ class Heap(object):
 
 	def heapify(self):
 		index = (len(self.heap) - 2) / 2
-		while (index > 0):
+		while (index >= 0):
 			self.downheap(index)
 			index -= 1
+
