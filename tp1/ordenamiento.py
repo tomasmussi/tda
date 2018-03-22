@@ -148,21 +148,35 @@ def evaluate_method(method, l, x):
 	elapsed = end - start
 	return elapsed
 
+
+def write_list_to_file(filename, l):
+	with open(filename, 'w') as f:
+		for number in l:
+			f.write(str(number) + '\n')
+
+def write_output_to_file(filename, output):
+	with open(filename, "wb") as f:
+		f.write("iteracion,metodo,rango,tiempo\n")
+		for i in output:
+			f.write(i + '\n')
+
+
 """Construir 10 sets de numeros aleatorios con 10.000 numeros positivos
 """
 def generate_numbers():
 	if (not os.path.isdir("numeros")):
 		os.makedirs("numeros")
 		for i in xrange(N_FILES):
-			with open('numeros/numeros_' + str(i) + '.txt', 'w') as f:
-				for j in xrange(NUMBERS_PER_FILE):
-					number = randint(0, MILLON)
-					f.write(str(number) + '\n')
+			file_name = 'numeros/numeros_' + str(i) + '.txt'
+			l = []
+			for j in xrange(NUMBERS_PER_FILE):
+				l.append(randint(0, MILLON))
+			write_list_to_file(file_name, l)
 	else:
 		print "No genero numeros"
 
-def get_numbers_from_file(i):
-	with open('numeros/numeros_' + str(i) + '.txt', 'r') as f:
+def get_numbers_from_file(directory, i):
+	with open(directory + '/numeros_' + str(i) + '.txt', 'r') as f:
 		content = f.readlines()
 	return [int(x) for x in content]
 
@@ -170,27 +184,22 @@ def get_numbers_from_file(i):
 Calcular los tiempos de ejecucion de cada algoritmo utilizando los primeros: 50, 100, 500, 1000, 2000, 3000, 4000, 5000,
 7500, 10000 numeros de cada set
 """
-def execute_sorts():
+def execute_sorts(output_file, read_directory, worst):
 	output = []
 	for i in xrange(N_FILES):
-		numbers = get_numbers_from_file(i)
-		for rango in number_ranges:
-			for method in methods.keys():
+		for method in methods.keys():
+			read_from = read_directory
+			if (worst):
+				read_from += "/" + method
+			numbers = get_numbers_from_file(read_from, i)
+			for rango in number_ranges:
 				l = numbers[:rango]
 				l.sort()
 				x = numbers[:rango]
 				time_taken = evaluate_method(method, l, x)
-				output.append(str(i) + "," + method + "," + str(rango) + "," + str(time_taken))
-
-	with open("numeros/ejecucion.csv", "wb") as f:
-		f.write("iteracion,metodo,rango,tiempo\n")
-		for i in output:
-			f.write(i + '\n')
-
-def write_list_to_file(filename, l):
-	with open(filename, 'w') as f:
-		for number in l:
-			f.write(str(number) + '\n')
+				line = str(i) + "," + method + "," + str(rango) + "," + str(time_taken)
+				output.append(line)
+	write_output_to_file(output_file, output)
 
 """
 Para cada algoritmo genera los peores casos de cada uno de los algoritmos de ordenamiento
@@ -201,7 +210,7 @@ def generate_worst_cases():
 		for k in methods.keys():
 			os.makedirs("worst-cases/"+k)
 		for i in xrange(N_FILES):
-			l = get_numbers_from_file(i)
+			l = get_numbers_from_file("numeros", i)
 			r = list(l)
 			r.sort(reverse=True)
 			write_list_to_file("worst-cases/seleccion/numeros_" + str(i) + ".txt", l) # No depende de datos
@@ -210,38 +219,12 @@ def generate_worst_cases():
 			write_list_to_file("worst-cases/mergesort/numeros_" + str(i) + ".txt", r) # Caso especial
 			write_list_to_file("worst-cases/heapsort/numeros_" + str(i) + ".txt", r) # Mayor a menor
 
-def get_worst_from_file(i, method):
-	with open('worst-cases/' + method + '/numeros_' + str(i) + '.txt', 'r') as f:
-		content = f.readlines()
-	return [int(x) for x in content]
-
-"""
-Calcular los tiempos de ejecucion de cada algoritmo utilizando los primeros: 50, 100, 500, 1000, 2000, 3000, 4000, 5000,
-7500, 10000 numeros de cada set
-"""
-def execute_worst_cases():
-	output = []
-	for i in xrange(N_FILES):
-		for method in methods.keys():
-			numbers = get_worst_from_file(i, method)
-			for rango in number_ranges:
-				l = numbers[:rango]
-				l.sort()
-				x = numbers[:rango]
-				time_taken = evaluate_method(method, l, x)
-				output.append(str(i) + "," + method + "," + str(rango) + "," + str(time_taken))
-
-	with open("numeros/peores.csv", "wb") as f:
-		f.write("iteracion,metodo,rango,tiempo\n")
-		for i in output:
-			f.write(i + '\n')
-
 
 def main():
 	generate_numbers()
-	execute_sorts()
+	execute_sorts("numeros/ejecucion.csv", "numeros", False)
 	generate_worst_cases()
-	execute_worst_cases()
+	execute_sorts("numeros/peores.csv", "worst-cases", True)
 
 if __name__ == '__main__':
 	main()
