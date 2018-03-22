@@ -14,6 +14,7 @@ N_FILES = 10
 NUMBERS_PER_FILE = 10000
 MILLON = 1000000
 
+number_ranges = [50, 100, 500, 1000, 2000, 3000, 4000, 5000, 7500, 10000]
 
 def swap(lista, i, j):
 	aux = lista[i]
@@ -114,6 +115,14 @@ def heapsort(iterable):
 		hp.heappush(h, value)
 	return [hp.heappop(h) for i in xrange(len(h))]
 
+methods = {
+	"seleccion" : selection_sort,
+	"insercion" : insertion_sort,
+	"quicksort" : quicksort,
+	"mergesort" : mergesort,
+	"heapsort" : heapsort
+}
+
 
 def compare(sorted_list, test):
 	if (len(sorted_list) != len(test)):
@@ -125,19 +134,6 @@ def compare(sorted_list, test):
 			return False
 	return True
 
-def list_test(n = 10):
-	sorted_list = [ x for x in xrange(n) ]
-	shuffled = list(sorted_list)
-	shuffle(shuffled)
-	return sorted_list, shuffled
-
-methods = {
-	"seleccion" : selection_sort,
-	"insercion" : insertion_sort,
-	"quicksort" : quicksort,
-	"mergesort" : mergesort,
-	"heapsort" : heapsort
-}
 
 
 """
@@ -176,7 +172,6 @@ Calcular los tiempos de ejecucion de cada algoritmo utilizando los primeros: 50,
 """
 def execute_sorts():
 	output = []
-	number_ranges = [50, 100, 500, 1000, 2000, 3000, 4000, 5000, 7500, 10000]
 	for i in xrange(N_FILES):
 		numbers = get_numbers_from_file(i)
 		for rango in number_ranges:
@@ -198,7 +193,7 @@ def write_list_to_file(filename, l):
 			f.write(str(number) + '\n')
 
 """
-Para cada algoritmo genera los peores casos de cada uno de los
+Para cada algoritmo genera los peores casos de cada uno de los algoritmos de ordenamiento
 """
 def generate_worst_cases():
 	if (not os.path.isdir("worst-cases")):
@@ -209,17 +204,44 @@ def generate_worst_cases():
 			l = get_numbers_from_file(i)
 			r = list(l)
 			r.sort(reverse=True)
-			write_list_to_file("worst-cases/seleccion/worst_" + str(i) + ".txt", l) # No depende de datos
-			write_list_to_file("worst-cases/insercion/worst_" + str(i) + ".txt", r) # Mayor a menor
-			write_list_to_file("worst-cases/quicksort/worst_" + str(i) + ".txt", r) # Mayor a menor
-			write_list_to_file("worst-cases/mergesort/worst_" + str(i) + ".txt", r) # Caso especial
-			write_list_to_file("worst-cases/heapsort/worst_" + str(i) + ".txt", r) # Mayor a menor
+			write_list_to_file("worst-cases/seleccion/numeros_" + str(i) + ".txt", l) # No depende de datos
+			write_list_to_file("worst-cases/insercion/numeros_" + str(i) + ".txt", r) # Mayor a menor
+			write_list_to_file("worst-cases/quicksort/numeros_" + str(i) + ".txt", r) # Mayor a menor
+			write_list_to_file("worst-cases/mergesort/numeros_" + str(i) + ".txt", r) # Caso especial
+			write_list_to_file("worst-cases/heapsort/numeros_" + str(i) + ".txt", r) # Mayor a menor
+
+def get_worst_from_file(i, method):
+	with open('worst-cases/' + method + '/numeros_' + str(i) + '.txt', 'r') as f:
+		content = f.readlines()
+	return [int(x) for x in content]
+
+"""
+Calcular los tiempos de ejecucion de cada algoritmo utilizando los primeros: 50, 100, 500, 1000, 2000, 3000, 4000, 5000,
+7500, 10000 numeros de cada set
+"""
+def execute_worst_cases():
+	output = []
+	for i in xrange(N_FILES):
+		for method in methods.keys():
+			numbers = get_worst_from_file(i, method)
+			for rango in number_ranges:
+				l = numbers[:rango]
+				l.sort()
+				x = numbers[:rango]
+				time_taken = evaluate_method(method, l, x)
+				output.append(str(i) + "," + method + "," + str(rango) + "," + str(time_taken))
+
+	with open("numeros/peores.csv", "wb") as f:
+		f.write("iteracion,metodo,rango,tiempo\n")
+		for i in output:
+			f.write(i + '\n')
 
 
 def main():
-	#generate_numbers()
-	#execute_sorts()
+	generate_numbers()
+	execute_sorts()
 	generate_worst_cases()
+	execute_worst_cases()
 
 if __name__ == '__main__':
 	main()
