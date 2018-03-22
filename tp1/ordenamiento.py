@@ -1,10 +1,14 @@
 import time
 from random import shuffle
+from random import randint
 import heapq as hp
-
+import os.path
 
 DEBUG = False
 
+N_FILES = 10
+NUMBERS_PER_FILE = 10000
+MILLON = 1000000
 
 
 def swap(lista, i, j):
@@ -141,12 +145,25 @@ def evaluate_method(method, n = 10):
 	elapsed = end - start
 	print method + " tardo en ordenar " + str(n) + " elementos " + str(elapsed) + " segundos"
 
+def generate_numbers():
+	if (not os.path.isdir("numeros")):
+		os.makedirs("numeros")
+		for i in xrange(N_FILES):
+			with open('numeros/numeros_' + str(i) + '.txt', 'w') as f:
+				for j in xrange(NUMBERS_PER_FILE):
+					number = randint(0, MILLON)
+					f.write(str(number) + '\n')
+
+
+
+
 def main():
-	evaluate_method("seleccion", 1000)
-	evaluate_method("insercion", 1000)
-	evaluate_method("quicksort", 100000)
-	evaluate_method("mergesort", 100000)
-	evaluate_method("heapsort", 100000)
+	generate_numbers()
+	#evaluate_method("seleccion", 1000)
+	#evaluate_method("insercion", 1000)
+	#evaluate_method("quicksort", 100000)
+	#evaluate_method("mergesort", 100000)
+	#valuate_method("heapsort", 100000)
 
 if __name__ == '__main__':
 	main()
