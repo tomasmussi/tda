@@ -201,6 +201,30 @@ def execute_sorts(output_file, read_directory, worst):
 				output.append(line)
 	write_output_to_file(output_file, output)
 
+
+"""
+El peor caso de mergesort es cuando se tiene que ejecutar la mayor cantidad de comparaciones entre los dos
+subarrays a mergear. Para lograr eso hay que separar los arrays de a dos y luego unirlos
+"""
+def get_mergesort_worst(lista):
+	if (len(lista) <= 1):
+		return lista
+	if (len(lista) == 2):
+		aux = lista[0]
+		lista[0] = lista[1]
+		lista[1] = aux
+		return lista
+	left = []
+	right = []
+	for i in range(0, len(lista), 2):
+		left.append(lista[i])
+	for i in range(1, len(lista), 2):
+		right.append(lista[i])
+	l_sep = get_mergesort_worst(left)
+	r_sep = get_mergesort_worst(right)
+	return l_sep + r_sep
+
+
 """
 Para cada algoritmo genera los peores casos de cada uno de los algoritmos de ordenamiento
 """
@@ -216,7 +240,9 @@ def generate_worst_cases():
 			write_list_to_file("worst-cases/seleccion/numeros_" + str(i) + ".txt", l) # No depende de datos
 			write_list_to_file("worst-cases/insercion/numeros_" + str(i) + ".txt", r) # Mayor a menor
 			write_list_to_file("worst-cases/quicksort/numeros_" + str(i) + ".txt", r) # Mayor a menor
-			write_list_to_file("worst-cases/mergesort/numeros_" + str(i) + ".txt", r) # Caso especial
+			mergesort_list = list(l)
+			mergesort_list.sort()
+			write_list_to_file("worst-cases/mergesort/numeros_" + str(i) + ".txt", get_mergesort_worst(mergesort_list))
 			write_list_to_file("worst-cases/heapsort/numeros_" + str(i) + ".txt", r) # Mayor a menor
 
 
