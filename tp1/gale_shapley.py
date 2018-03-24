@@ -58,15 +58,55 @@ def get_preferences():
 Algoritmo de Gale Shapley para encontrar un matching estable de equipos
 """
 def gale_shapley(team_prefs, player_prefs):
-	print team_prefs
-	print player_prefs
-	raise NotImplementedError()
+
+	matches = {}
+	vacancies = [N_PLAYERS / N_TEAMS for i in range(N_TEAMS)]
+	team_prefs_index = [0 for i in range(N_TEAMS)]
+	teams_not_full = [i for i in range(N_TEAMS)]
+	player_team = [-1 for i in range(N_PLAYERS)]
+	matrix_preference = [{} for i in range(N_PLAYERS)]
+
+	for i in range(N_PLAYERS):
+		pref = 0
+		for j in player_prefs[i]:
+			matrix_preference[i][j] = pref
+			pref += 1
+
+	while (teams_not_full):
+		team_i = teams_not_full[0]
+		next_offer = team_prefs_index[team_i]
+		player_j = team_prefs[team_i][next_offer]
+		if (player_team[player_j] == -1):
+			# Jugador no tiene equipo
+			matches[(team_i, player_j)] = True
+			vacancies[team_i] -= 1
+			if (vacancies[team_i] == 0):
+				teams_not_full.pop(0)
+			player_team[player_j] = team_i
+		else:
+			current_team = player_team[player_j]
+
+			if (matrix_preference[player_j][team_i] < matrix_preference[player_j][current_team]):
+				matches.pop((current_team, player_j), None)
+				vacancies[current_team] += 1
+				if (not current_team in teams_not_full): # GUARDA CON ESTO, ES O(N)!!!
+					teams_not_full.insert(len(teams_not_full), current_team)
+				vacancies[team_i] -= 1
+				if (vacancies[team_i] == 0):
+					teams_not_full.pop(0)
+		team_prefs_index[team_i] += 1
+
+	return matches
+
+def is_stable_matching(sm, team_prefs, player_prefs):
+	return False
 
 
 def main():
 	generate_instance()
 	team_prefs, player_prefs = get_preferences()
-	gale_shapley(team_prefs, player_prefs)
+	sm = gale_shapley(team_prefs, player_prefs)
+	assert(is_stable_matching(sm, team_prefs, player_prefs))
 
 
 
