@@ -1,6 +1,7 @@
 from random import shuffle
 import os.path
 
+DEBUG = True
 N_PLAYERS = 200
 N_TEAMS = 20
 DIR_NAME = "gs-instance/"
@@ -100,25 +101,68 @@ def gale_shapley(team_prefs, player_prefs):
 		team_i = teams_not_full[0]
 		next_offer = team_prefs_index[team_i]
 		player_j = team_prefs[team_i][next_offer]
+
+		if (DEBUG):
+			print "Buscando team para " + str(team_i)
+			print "Siguiente oferta a indice: " + str(next_offer) + " que es el jugador " + str(player_j)
+			print str(player_j) + " esta en equipo: " + str(player_team[player_j])
+			print
 		if (player_team[player_j] == -1):
 			# Jugador no tiene equipo
 			matches[(team_i, player_j)] = True
 			vacancies[team_i] -= 1
 			if (vacancies[team_i] == 0):
 				teams_not_full.pop(0)
+
 			player_team[player_j] = team_i
 		else:
 			current_team = player_team[player_j]
-
+			if (DEBUG):
+				print "Preferencia de " + str(player_j) + " " + str(player_prefs[player_j])
+				print "player prefiere a " + str(team_i) + " o a " + str(current_team) + " ??? "
+				print "nuevo " + str(matrix_preference[player_j][team_i]) + " < " + str(matrix_preference[player_j][current_team])
 			if (matrix_preference[player_j][team_i] < matrix_preference[player_j][current_team]):
-				matches.pop((current_team, player_j), None)
+				r = matches.pop((current_team, player_j), None)
+				if (DEBUG and r is None):
+					print matches
+					print "se trato de eliminar (" + str(current_team) + ", " + str(player_j) +") del matchin pero no esta"
+					exit()
+				if (DEBUG):
+					print "VACANTES DE " + str(current_team)+ " : " + str(vacancies[current_team])
 				vacancies[current_team] += 1
-				if (not current_team in teams_not_full): # GUARDA CON ESTO, ES O(N)!!!
+				if (DEBUG):
+					print "Equipos con vacante: " + str(teams_not_full)
+				if (vacancies[current_team] == 1):
+					if (DEBUG):
+						if (current_team in teams_not_full):
+							print "INSERTANDO UN EQUIPO QUE YA ESTA EN TEAMS NOT FULL"
+							exit()
 					teams_not_full.insert(len(teams_not_full), current_team)
+
+
 				vacancies[team_i] -= 1
 				if (vacancies[team_i] == 0):
+					if (DEBUG):
+						print "llenamos todas las vacantes de equipo: " + str(team_i)
+						print "Equipos con vacante: " + str(teams_not_full)
 					teams_not_full.pop(0)
+					if (DEBUG):
+						print "Debe haber uno menos: " + str(teams_not_full)
+
+				# Cambio de equipo
+				player_team[player_j] = team_i
+				matches[(team_i, player_j)] = True
+				# Agrego nueva pareja al matching
+
+
+				if (DEBUG):
+					print "sacamos a " + str(r)
+					print "debemos aumentar la vacante del team actual " + str(vacancies[team_i])
+					print
 		team_prefs_index[team_i] += 1
+		if (vacancies[team_i] < 0):
+			print "ACABO DE DEJAR CON VACANTES NEGATIVAS A " + str(team_i)
+			exit()
 
 	return matches
 
@@ -137,9 +181,10 @@ def is_stable_matching(sm, team_prefs, player_prefs):
 		else:
 			matrix[k[0]] = [k[1]]
 	for k in matrix:
+		print k
+		print matrix[k]
 		if (len(matrix[k]) != (N_PLAYERS / N_TEAMS)):
 			return False
-	# TODO(tmussi) Falta verificar que es matching estable.
 	return True
 
 
