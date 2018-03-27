@@ -1,7 +1,7 @@
 from random import shuffle
 import os.path
 
-DEBUG = True
+DEBUG = False
 N_PLAYERS = 200
 N_TEAMS = 20
 DIR_NAME = "gs-instance/"
@@ -81,6 +81,7 @@ Player i para Team j. A menor valor, mayor preferencia por dicho equipo.
 Se utiliza para realizar comparaciones en tiempo constante de si un jugador prefiere un Team u otro para tomar la decision
 de quedarse o irse de un Team
 
+RETURN: devuelve un diccionario de Tupla : True, donde Tupla[0] es Team y Tupla[1] es Player
 """
 def gale_shapley(team_prefs, player_prefs):
 
@@ -166,25 +167,76 @@ def gale_shapley(team_prefs, player_prefs):
 
 	return matches
 
+
+"""
+Verifica si es inestable un par (Team, Player)
+"""
+def is_stable(team, player, team_prefs, player_prefs):
+	# Verifico que Player este dentro de las 10 primeras opciones de Team
+	team_prefers_player = team_prefs[team].index(player) < (N_PLAYERS / N_TEAMS)
+	if (team_prefers_player):
+		# Veo que pasa con las preferencias de Player, me fijo los Teams anteriores dentro de sus preferencias
+		index_of_team = player_prefs[player].index(team)
+		for i in range(index_of_team):
+			other_team = player_prefs[player][i]
+			# Other Team es un Team que Player preferia antes que el Team en el que esta, debo asegurarme que
+			# todas las vacantes que tenia Other Team estan cubiertas por Players con mayor preferencia que Player
+			for ot_pref in team_prefs[other_team]:
+				if (ot_pref == player):
+					# Encontre a player dentro de las preferencias de otro team
+					break
+
+
+				if (team_prefs[other_team].index(ot_pref) > team_prefs[other_team].index(player)):
+					# Prefiere a player por sobre otros antes que player
+					if (DEBUG):
+						print "Equipo " + str(other_team) + " prefiere a jugador " + str(player) + " antes que " + str(ot_pref)
+					return False
+	else:
+		# No esta dentro de mis vacantes, los players anteriores prefieren otros equipos antes que Team
+		# Me fijo Players anteriores dentro de mis preferencias
+		index_of_player = team_prefs[team].index(player)
+		for i in range(index_of_player):
+			other_player = team_prefs[team][i]
+			# Other Player es un jugador que Team preferia antes que el jugador que tiene, debo asegurarme que
+			# Other Player esta en un equipo que prefiere antes que Team
+			for op_pref in player_prefs[other_player]:
+				if (op_pref == team):
+					# Encontre a team dentro de las preferencias del jugador
+					break
+
+				if (player_prefs[other_player].index(op_pref) > player_prefs[other_player].index(team)):
+					# Prefiere a otro equipo antes que el equipo en el que esta
+					if (DEBUG):
+						print "Equipo " + str(other_team) + " prefiere a jugador " + str(player) + " antes que " + str(ot_pref)
+					return False
+	return True
+
 """
 Para verificar que el resultado obtenido es valido se deben verificar:
 1) Hay 20 equipos con 10 personas para cada equipo
-2) Para cada combinacion de (team, player) no pueden verificarse ambas condiciones
-OtroTeam tiene preferencia por un Player de Team
-Player tiene preferencia por OtroTeam antes que por Team
+2) Para cada combinacion de (team, player) tiene que verificarse que:
+2.1) Si para equipo, el jugador esta dentro de las 10 vacantes, tiene que pasar que el jugador no prefiera estar en otros equipos
+2.2) Si hay jugadores previos, esos jugadores previos deben tener preferencia por otros equipos
 """
 def is_stable_matching(sm, team_prefs, player_prefs):
 	matrix = {}
+	# Verificar que haya 20 Teams con 10 Players para cada uno
 	for k in sm.keys():
 		if k[0] in matrix:
 			matrix[k[0]].append(k[1])
 		else:
 			matrix[k[0]] = [k[1]]
 	for k in matrix:
-		print k
-		print matrix[k]
+		print str(k) + " : " + str(matrix[k])
 		if (len(matrix[k]) != (N_PLAYERS / N_TEAMS)):
 			return False
+
+	for team in matrix.keys():
+		for player in matrix[team]:
+			stable = is_stable(team, player, team_prefs, player_prefs)
+			if (not stable):
+				return False
 	return True
 
 
