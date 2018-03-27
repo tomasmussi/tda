@@ -219,16 +219,9 @@ Para verificar que el resultado obtenido es valido se deben verificar:
 2.1) Si para equipo, el jugador esta dentro de las 10 vacantes, tiene que pasar que el jugador no prefiera estar en otros equipos
 2.2) Si hay jugadores previos, esos jugadores previos deben tener preferencia por otros equipos
 """
-def is_stable_matching(sm, team_prefs, player_prefs):
-	matrix = {}
+def is_stable_matching(matrix, team_prefs, player_prefs):
 	# Verificar que haya 20 Teams con 10 Players para cada uno
-	for k in sm.keys():
-		if k[0] in matrix:
-			matrix[k[0]].append(k[1])
-		else:
-			matrix[k[0]] = [k[1]]
-	for k in matrix:
-		print str(k) + " : " + str(matrix[k])
+	for k in matrix.keys():
 		if (len(matrix[k]) != (N_PLAYERS / N_TEAMS)):
 			return False
 
@@ -239,13 +232,28 @@ def is_stable_matching(sm, team_prefs, player_prefs):
 				return False
 	return True
 
+def get_matrix(sm):
+	matrix = {}
+	for k in sm.keys():
+		if k[0] in matrix:
+			matrix[k[0]].append(k[1])
+		else:
+			matrix[k[0]] = [k[1]]
+	for k in matrix.keys():
+		matrix[k].sort()
+	return matrix
+
+def print_matrix(matrix):
+	for k in matrix.keys():
+		print str(k) + " : " + str(matrix[k])
 
 def main():
 	generate_instance()
 	team_prefs, player_prefs = get_preferences()
 	sm = gale_shapley(team_prefs, player_prefs)
-	assert(is_stable_matching(sm, team_prefs, player_prefs))
-
+	matrix = get_matrix(sm)
+	assert(is_stable_matching(matrix, team_prefs, player_prefs))
+	print_matrix(matrix)
 
 
 if __name__ == '__main__':
