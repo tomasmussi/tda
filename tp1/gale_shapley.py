@@ -1,7 +1,6 @@
 from random import shuffle
 import os.path
 
-DEBUG = False
 N_PLAYERS = 200
 N_TEAMS = 20
 DIR_NAME = "gs-instance/"
@@ -103,11 +102,6 @@ def gale_shapley(team_prefs, player_prefs):
 		next_offer = team_prefs_index[team_i]
 		player_j = team_prefs[team_i][next_offer]
 
-		if (DEBUG):
-			print "Buscando team para " + str(team_i)
-			print "Siguiente oferta a indice: " + str(next_offer) + " que es el jugador " + str(player_j)
-			print str(player_j) + " esta en equipo: " + str(player_team[player_j])
-			print
 		if (player_team[player_j] == -1):
 			# Jugador no tiene equipo
 			matches[(team_i, player_j)] = True
@@ -118,53 +112,20 @@ def gale_shapley(team_prefs, player_prefs):
 			player_team[player_j] = team_i
 		else:
 			current_team = player_team[player_j]
-			if (DEBUG):
-				print "Preferencia de " + str(player_j) + " " + str(player_prefs[player_j])
-				print "player prefiere a " + str(team_i) + " o a " + str(current_team) + " ??? "
-				print "nuevo " + str(matrix_preference[player_j][team_i]) + " < " + str(matrix_preference[player_j][current_team])
 			if (matrix_preference[player_j][team_i] < matrix_preference[player_j][current_team]):
 				r = matches.pop((current_team, player_j), None)
-				if (DEBUG and r is None):
-					print matches
-					print "se trato de eliminar (" + str(current_team) + ", " + str(player_j) +") del matchin pero no esta"
-					exit()
-				if (DEBUG):
-					print "VACANTES DE " + str(current_team)+ " : " + str(vacancies[current_team])
 				vacancies[current_team] += 1
-				if (DEBUG):
-					print "Equipos con vacante: " + str(teams_not_full)
 				if (vacancies[current_team] == 1):
-					if (DEBUG):
-						if (current_team in teams_not_full):
-							print "INSERTANDO UN EQUIPO QUE YA ESTA EN TEAMS NOT FULL"
-							exit()
 					teams_not_full.insert(len(teams_not_full), current_team)
-
-
 				vacancies[team_i] -= 1
 				if (vacancies[team_i] == 0):
-					if (DEBUG):
-						print "llenamos todas las vacantes de equipo: " + str(team_i)
-						print "Equipos con vacante: " + str(teams_not_full)
 					teams_not_full.pop(0)
-					if (DEBUG):
-						print "Debe haber uno menos: " + str(teams_not_full)
 
 				# Cambio de equipo
 				player_team[player_j] = team_i
-				matches[(team_i, player_j)] = True
 				# Agrego nueva pareja al matching
-
-
-				if (DEBUG):
-					print "sacamos a " + str(r)
-					print "debemos aumentar la vacante del team actual " + str(vacancies[team_i])
-					print
+				matches[(team_i, player_j)] = True
 		team_prefs_index[team_i] += 1
-		if (vacancies[team_i] < 0):
-			print "ACABO DE DEJAR CON VACANTES NEGATIVAS A " + str(team_i)
-			exit()
-
 	return matches
 
 
@@ -185,12 +146,8 @@ def is_stable(team, player, team_prefs, player_prefs):
 				if (ot_pref == player):
 					# Encontre a player dentro de las preferencias de otro team
 					break
-
-
 				if (team_prefs[other_team].index(ot_pref) > team_prefs[other_team].index(player)):
 					# Prefiere a player por sobre otros antes que player
-					if (DEBUG):
-						print "Equipo " + str(other_team) + " prefiere a jugador " + str(player) + " antes que " + str(ot_pref)
 					return False
 	else:
 		# No esta dentro de mis vacantes, los players anteriores prefieren otros equipos antes que Team
@@ -204,11 +161,8 @@ def is_stable(team, player, team_prefs, player_prefs):
 				if (op_pref == team):
 					# Encontre a team dentro de las preferencias del jugador
 					break
-
 				if (player_prefs[other_player].index(op_pref) > player_prefs[other_player].index(team)):
 					# Prefiere a otro equipo antes que el equipo en el que esta
-					if (DEBUG):
-						print "Equipo " + str(other_team) + " prefiere a jugador " + str(player) + " antes que " + str(ot_pref)
 					return False
 	return True
 
