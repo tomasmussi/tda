@@ -34,10 +34,10 @@ def generate_instance():
 
 		for player in players:
 			shuffle(player_preference)
-			write_file(DIR_NAME + "player_" + str(player) + ".prf", player_preference)
+			write_file(DIR_NAME + "jugador_" + str(player) + ".prf", player_preference)
 		for team in teams:
 			shuffle(team_preference)
-			write_file(DIR_NAME + "team_" + str(team) + ".prf", team_preference)
+			write_file(DIR_NAME + "equipo_" + str(team) + ".prf", team_preference)
 
 """
 Obtiene en forma de matriz las preferencias de todos los players y teams
@@ -46,11 +46,11 @@ En el indice i, esta la preferencia del player/team i
 def get_preferences():
 	team_prefs = []
 	for i in xrange(N_TEAMS):
-		t_pref = get_numbers_from_file(DIR_NAME + "team_" + str(i) + ".prf")
+		t_pref = get_numbers_from_file(DIR_NAME + "equipo_" + str(i) + ".prf")
 		team_prefs.append(t_pref)
 	player_prefs = []
 	for i in xrange(N_PLAYERS):
-		p_pref = get_numbers_from_file(DIR_NAME + "player_" + str(i) + ".prf")
+		p_pref = get_numbers_from_file(DIR_NAME + "jugador_" + str(i) + ".prf")
 		player_prefs.append(p_pref)
 	return team_prefs, player_prefs
 
