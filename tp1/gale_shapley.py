@@ -132,38 +132,35 @@ def gale_shapley(team_prefs, player_prefs):
 """
 Verifica si es inestable un par (Team, Player)
 """
-def is_stable(team, player, team_prefs, player_prefs):
+def is_stable(team, player, team_prefs, player_prefs, matches):
 	# Verifico que Player este dentro de las 10 primeras opciones de Team
 	team_prefers_player = team_prefs[team].index(player) < (N_PLAYERS / N_TEAMS)
-	if (team_prefers_player):
-		# Veo que pasa con las preferencias de Player, me fijo los Teams anteriores dentro de sus preferencias
-		index_of_team = player_prefs[player].index(team)
-		for i in range(index_of_team):
-			other_team = player_prefs[player][i]
-			# Other Team es un Team que Player preferia antes que el Team en el que esta, debo asegurarme que
-			# todas las vacantes que tenia Other Team estan cubiertas por Players con mayor preferencia que Player
-			for ot_pref in team_prefs[other_team]:
-				if (ot_pref == player):
-					# Encontre a player dentro de las preferencias de otro team
-					break
-				if (team_prefs[other_team].index(ot_pref) > team_prefs[other_team].index(player)):
-					# Prefiere a player por sobre otros antes que player
-					return False
-	else:
-		# No esta dentro de mis vacantes, los players anteriores prefieren otros equipos antes que Team
-		# Me fijo Players anteriores dentro de mis preferencias
+	if (not team_prefers_player):
+		# No esta dentro de las 10 primeras opciones de team, algunos de los players anteriores prefieren otros equipos antes que Team
+		# Me fijo Players anteriores dentro de mis preferencias (Team)
 		index_of_player = team_prefs[team].index(player)
 		for i in range(index_of_player):
 			other_player = team_prefs[team][i]
+			other_team = [t for t,p in matches.items() if other_player in p ][0] #Hay un solo equipo para cada jugador
+			if other_team == team: #Si son del mismo equipo ni tengo que verificar
+				continue
 			# Other Player es un jugador que Team preferia antes que el jugador que tiene, debo asegurarme que
 			# Other Player esta en un equipo que prefiere antes que Team
-			for op_pref in player_prefs[other_player]:
-				if (op_pref == team):
-					# Encontre a team dentro de las preferencias del jugador
-					break
-				if (player_prefs[other_player].index(op_pref) > player_prefs[other_player].index(team)):
-					# Prefiere a otro equipo antes que el equipo en el que esta
-					return False
+			if (player_prefs[other_player].index(other_team) > player_prefs[other_player].index(team)):
+				# Prefiere a team antes que el equipo en el que esta
+				return False
+
+	# Veo que pasa con las preferencias del Player, me fijo los Teams anteriores dentro de sus preferencias
+	index_of_team = player_prefs[player].index(team)
+	for i in range(index_of_team):
+		other_team = player_prefs[player][i]
+		# Other Team es un Team que Player preferia antes que el Team en el que esta, debo asegurarme que
+		# todas las vacantes que tenia Other Team estan cubiertas por Players con mayor preferencia que Player
+		other_players = matches[other_team]
+		for op in other_players:
+			if (team_prefs[other_team].index(op) > team_prefs[other_team].index(player)):
+				# other_team prefiere a player por sobre otro player (op) y sin embargo se quedo con op
+				return False
 	return True
 
 """
@@ -173,7 +170,7 @@ Para verificar que el resultado obtenido es valido se deben verificar:
 2.1) Si para equipo, el jugador esta dentro de las 10 vacantes, tiene que pasar que el jugador no prefiera estar en otros equipos
 2.2) Si hay jugadores previos, esos jugadores previos deben tener preferencia por otros equipos
 """
-def is_stable_matching(matrix, team_prefs, player_prefs):
+def is_stable_matching(matrix, team_prefs, player_prefs, matches):
 	# Verificar que haya 20 Teams con 10 Players para cada uno
 	for k in matrix.keys():
 		if (len(matrix[k]) != (N_PLAYERS / N_TEAMS)):
@@ -181,7 +178,7 @@ def is_stable_matching(matrix, team_prefs, player_prefs):
 
 	for team in matrix.keys():
 		for player in matrix[team]:
-			stable = is_stable(team, player, team_prefs, player_prefs)
+			stable = is_stable(team, player, team_prefs, player_prefs, matches)
 			if (not stable):
 				return False
 	return True
@@ -206,7 +203,7 @@ def main():
 	team_prefs, player_prefs = get_preferences()
 	sm = gale_shapley(team_prefs, player_prefs)
 	matrix = get_matrix(sm)
-	assert(is_stable_matching(matrix, team_prefs, player_prefs))
+	assert(is_stable_matching(matrix, team_prefs, player_prefs, matrix))
 	print_matrix(matrix)
 
 
