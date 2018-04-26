@@ -70,15 +70,21 @@ def solve_by_brute_force(cases):
 		assert(not brute_force(key, NO_MATCH))
 
 def kmp(s1, s2):
-	raise NotImplementedError()
+	assert(len(s1) == len(s2))
+	if (DEBUG):
+		print "KMP: verificando que " +str(s2) + " es una rotacion de " + str(s1)
+	return True
 
 
 def solve_by_kmp(cases):
-	raise NotImplementedError()
+	for key in cases.keys():
+		assert(kmp(key, cases[key]))
+		assert(not kmp(key, NO_MATCH))
 
 def main():
 	cases = generate_cases()
-	solve_by_brute_force(cases.copy()) # Me aseguro que no va a modificar las palabras
+	solve_by_brute_force(cases)
+	solve_by_kmp(cases)
 
 
 if __name__ == '__main__':
