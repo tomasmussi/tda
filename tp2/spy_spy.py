@@ -14,6 +14,7 @@ def main():
 	print "El espia 2 esta en posicion " + str(spy2)
 	print "El aeropuerto esta en posicion " + str(aeropuerto)
 	grafo = Grafo()
+	# TODO: Resolver...
 
 
 if __name__ == '__main__':
