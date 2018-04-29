@@ -2,7 +2,6 @@ import heapq
 
 from heapq import *
 
-
 class Grafo(object):
 
 	def __init__(self):

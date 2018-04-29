@@ -1,7 +1,16 @@
 import sys
 from grafo import Grafo
 
-
+def llenarGrafo(grafo):
+	with open('mapa.coords') as openfileobject:
+			for line in openfileobject:
+				vertices = line.split(' - ')
+				v1 = vertices[0].rstrip()
+				v2 = vertices[1].rstrip()
+				grafo.agregarVertice(v1)
+				grafo.agregarVertice(v2)
+				grafo.agregarArista(v1, v2)
+	print grafo.vertices
 
 def main():
 	if (len(sys.argv) != 7):
@@ -13,7 +22,13 @@ def main():
 	print "El espia 1 esta en posicion " + str(spy1)
 	print "El espia 2 esta en posicion " + str(spy2)
 	print "El aeropuerto esta en posicion " + str(aeropuerto)
+
+
+
 	grafo = Grafo()
+	llenarGrafo(grafo)
+
+
 	# TODO: Resolver...
 
 
