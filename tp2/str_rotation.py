@@ -43,44 +43,149 @@ def generate_cases():
 	return cases
 
 """
-Busca por fuerza bruta rotaciones de una palabra sobre otra.
-Devuelve True si lookup_word es una rotacion de search
+Busca por fuerza bruta rotaciones de word sobre text_search.
+Devuelve True si word es una rotacion de text_search
 Devuelve False en caso contrario
 """
-def brute_force(search, lookup_word):
+def brute_force(word, text_search):
 	# Asegurar que estamos comparando strings de misma longitud
-	assert(len(search) == len(lookup_word))
+	assert(len(text_search) == len(word))
 	if (DEBUG):
-		print "Verificando que " +str(lookup_word) + " es una rotacion de " + str(search)
-	if (search == lookup_word):
+		print "Verificando que " +str(word) + " es una rotacion de " + str(text_search)
+	if (text_search == word):
 		# Son la misma palabra
 		return True
-	deq = deque(lookup_word)
-	for i in xrange(len(search)):
+	deq = deque(word)
+	for i in xrange(len(text_search)):
 		deq.rotate(1)
-		if ("".join(deq) == search):
+		if ("".join(deq) == text_search):
 			if (DEBUG):
-				print str(lookup_word) + " con rotacion " + "".join(deq) + " == " + str(search)
+				print str(word) + " con rotacion " + "".join(deq) + " == " + str(text_search)
 			return True
 	return False
 
 def solve_by_brute_force(cases):
 	for key in cases.keys():
-		assert(brute_force(key, cases[key]))
-		assert(not brute_force(key, NO_MATCH))
+		assert(brute_force(cases[key], key))
+		assert(not brute_force(NO_MATCH, key))
 
-def kmp(search, lookup_word):
-	assert(len(search) == len(lookup_word))
+
+
+
+"""
+ algorithm kmp_table:
+    input:
+        an array of characters, W (the word to be analyzed)
+        an array of integers, T (the table to be filled)
+    output:
+        nothing (but during operation, it populates the table)
+
+    define variables:
+        an integer, pos <= 1 (the current position we are computing in T)
+        an integer, cnd <= 0 (the zero-based index in W of the next character of the current candidate substring)
+
+    let T[0] <= -1
+
+    while pos < length(W) do
+        if W[pos] = W[cnd] then
+            let T[pos] <= T[cnd], pos <= pos + 1, cnd <= cnd + 1
+        else
+            let T[pos] <= cnd
+
+            let cnd <= T[cnd] (to increase performance)
+
+            while cnd >= 0 and W[pos] <> W[cnd] do
+                let cnd <= T[cnd]
+
+            let pos <= pos + 1, cnd <= cnd + 1
+
+    let T[pos] <= cnd (only need when all word occurrences searched)
+"""
+def get_kmp_table_lookup(word):
+	table = {}
+	pos = 1
+	cnd = 0
+	table[0] = -1
+	while (pos < len(word)):
+		if (word[pos] == word[cnd]):
+			table[pos] = table[cnd]
+			pos += 1
+			cnd += 1
+		else:
+			table[pos] = cnd
+			cnd = table[cnd]
+			while (cnd >= 0 and word[pos] != word[cnd]):
+				cnd = table[cnd]
+			pos += 1
+			cnd += 1
+	table[pos] = cnd
+	return table
+
+
+
+
+
+"""
+Algoritmo de kmp, implementado a partir del pseudocodigo en wikipedia:
+https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm
+algorithm kmp_search:
+    input:
+        an array of characters, S (the text to be searched)
+        an array of characters, W (the word sought)
+    output:
+        an array of integers, P (positions in S at which W is found)
+        an integer, nP (number of positions)
+
+    define variables:
+        an integer, j <= 0 (the position of the current character in S)
+        an integer, k <= 0 (the position of the current character in W)
+        an array of integers, T (the table, computed elsewhere)
+
+    let nP <= 0
+
+    while j < length(S) do
+        if W[k] = S[j] then
+            let j <= j + 1
+            let k <= k + 1
+            if k = length(W) then
+                (occurrence found, if only first occurrence is needed, m may be returned here)
+                let P[nP] <= j - k, nP <= nP + 1
+                let k <= T[k] (T[length(W)] can't be -1)
+        else
+            let k <= T[k]
+            if k < 0 then
+                let j <= j + 1
+                let k <= k + 1
+"""
+def kmp(word, text_search):
+	assert(len(text_search) == len(word))
 	if (DEBUG):
-		print "KMP: verificando que " +str(lookup_word) + " es una rotacion de " + str(search)
+		print "KMP: verificando que " +str(word) + " es una rotacion de " + str(text_search)
+	j = 0 # Index in text_search
+	k = 0 # Index in word
+	table_lookup = get_kmp_table_lookup(word)
 
-	return True
+	while (j < len(text_search)): # O(n) siendo n la longitud de la palabra
+		if (word[k] == text_search[j]): # O(1)
+			j += 1
+			k += 1
+			if (k == len(word) - 1):
+				return True
+				#k = table_lookup[k]
+		else:
+			k = table_lookup[k]
+			if (k < 0):
+				j += 1
+				k += 1
+
+	return False
+
 
 
 def solve_by_kmp(cases):
 	for key in cases.keys():
-		assert(kmp(key, cases[key]))
-		assert(not kmp(key, NO_MATCH))
+		assert(kmp(cases[key], key))
+		assert(not kmp(NO_MATCH, key))
 
 def main():
 	cases = generate_cases()
