@@ -44,23 +44,23 @@ def generate_cases():
 
 """
 Busca por fuerza bruta rotaciones de una palabra sobre otra.
-Devuelve True si s2 es una rotacion de s1
+Devuelve True si lookup_word es una rotacion de search
 Devuelve False en caso contrario
 """
-def brute_force(s1, s2):
+def brute_force(search, lookup_word):
 	# Asegurar que estamos comparando strings de misma longitud
-	assert(len(s1) == len(s2))
+	assert(len(search) == len(lookup_word))
 	if (DEBUG):
-		print "Verificando que " +str(s2) + " es una rotacion de " + str(s1)
-	if (s1 == s2):
+		print "Verificando que " +str(lookup_word) + " es una rotacion de " + str(search)
+	if (search == lookup_word):
 		# Son la misma palabra
 		return True
-	deq = deque(s2)
-	for i in xrange(len(s1)):
+	deq = deque(lookup_word)
+	for i in xrange(len(search)):
 		deq.rotate(1)
-		if ("".join(deq) == s1):
+		if ("".join(deq) == search):
 			if (DEBUG):
-				print str(s2) + " con rotacion " + "".join(deq) + " == " + str(s1)
+				print str(lookup_word) + " con rotacion " + "".join(deq) + " == " + str(search)
 			return True
 	return False
 
@@ -69,10 +69,11 @@ def solve_by_brute_force(cases):
 		assert(brute_force(key, cases[key]))
 		assert(not brute_force(key, NO_MATCH))
 
-def kmp(s1, s2):
-	assert(len(s1) == len(s2))
+def kmp(search, lookup_word):
+	assert(len(search) == len(lookup_word))
 	if (DEBUG):
-		print "KMP: verificando que " +str(s2) + " es una rotacion de " + str(s1)
+		print "KMP: verificando que " +str(lookup_word) + " es una rotacion de " + str(search)
+
 	return True
 
 
