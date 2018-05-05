@@ -1,4 +1,5 @@
 import heapq
+import Queue
 
 from heapq import *
 
@@ -64,6 +65,35 @@ class Grafo(object):
 			return False
 		return v1 in self.vertices[v2]
 
+
+	def bfs_sin_camino(self, v1, v2):
+		cola = Queue.Queue()
+		visitados = {}
+		distancias = {}
+		encontrado = False
+
+		cola.put(v1)
+		distancias[v1] = 0
+		visitados[v1] = True
+
+		while (not cola.empty() and not encontrado):
+			vertice = cola.get()
+			vecinos = self.obtenerAristas(vertice)
+			for vecino in vecinos:
+				# Si esta en los visitados
+				if vecino not in visitados:
+					distancias[vecino] = distancias[vertice] + 1
+					visitados[vecino] = True
+					# Si es el que buscaba corto todo, sino lo agrego a la cola y sigo
+					if vecino == v2:
+						encontrado = True
+						break
+					else:
+						cola.put(vecino)
+		
+		if encontrado:
+			return distancias[v2]
+		return False
 
 	def recorridoDijkstra(self, v):
 		# LLamo vertices para no estar todo el tiempo con self
