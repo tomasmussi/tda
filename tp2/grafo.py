@@ -103,10 +103,10 @@ class Grafo(object):
 			a_retornar = "Distancia: " + str(distancias[v2])
 			if con_camino:
 				camino = v2
-				verticeActual = v2
-				while prev[verticeActual] != None:
-					camino = camino + prev[verticeActual]
-					verticeActual = prev[verticeActual]
+				vertice_actual = v2
+				while prev[vertice_actual] != None:
+					camino = camino + prev[vertice_actual]
+					vertice_actual = prev[vertice_actual]
 				a_retornar += (" y el camino: " + camino[::-1])
 			return a_retornar
 		return 'No se encontro camino'
