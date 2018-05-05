@@ -66,15 +66,20 @@ class Grafo(object):
 		return v1 in self.vertices[v2]
 
 
-	def bfs_sin_camino(self, v1, v2):
+	def bfs(self, v1, v2, con_camino = False):
+
+		if (v1 not in self.vertices or v2 not in self.vertices):
+			return 'Los vertices tienen que pertenecer al grafo'
+
 		cola = Queue.Queue()
 		visitados = {}
 		distancias = {}
+		prev = {}
 		encontrado = False
-
-		cola.put(v1)
 		distancias[v1] = 0
 		visitados[v1] = True
+		prev[v1] = None
+		cola.put(v1)
 
 		while (not cola.empty() and not encontrado):
 			vertice = cola.get()
@@ -82,6 +87,8 @@ class Grafo(object):
 			for vecino in vecinos:
 				# Si esta en los visitados
 				if vecino not in visitados:
+					if con_camino:
+						prev[vecino] = vertice
 					distancias[vecino] = distancias[vertice] + 1
 					visitados[vecino] = True
 					# Si es el que buscaba corto todo, sino lo agrego a la cola y sigo
@@ -91,9 +98,18 @@ class Grafo(object):
 					else:
 						cola.put(vecino)
 		
+		# Si lo encontre, devuelvo la distancia y en el caso de que haya camino pedido, tambien.
 		if encontrado:
-			return distancias[v2]
-		return False
+			a_retornar = "Distancia: " + str(distancias[v2])
+			if con_camino:
+				camino = v2
+				verticeActual = v2
+				while prev[verticeActual] != None:
+					camino = camino + prev[verticeActual]
+					verticeActual = prev[verticeActual]
+				a_retornar += (" y el camino: " + camino[::-1])
+			return a_retornar
+		return 'No se encontro camino'
 
 	def recorridoDijkstra(self, v):
 		# LLamo vertices para no estar todo el tiempo con self
