@@ -1,8 +1,9 @@
 import sys
 from grafo import Grafo
+from scipy.spatial import distance
 
 
-def llenar_grafo(grafo):
+def llenar_grafo(grafo, con_distancias = False):
     with open('mapa.coords') as openfileobject:
         for line in openfileobject:
             vertices = line.split(' - ')
@@ -10,7 +11,12 @@ def llenar_grafo(grafo):
             v2 = vertices[1].rstrip()
             grafo.agregarVertice(v1)
             grafo.agregarVertice(v2)
-            grafo.agregarArista(v1, v2)
+            distancia = 1
+            if con_distancias:
+                v1_coord = tuple(map(int, v1.split(' ')))
+                v2_coord = tuple(map(int, v2.split(' ')))
+                distancia = distance.euclidean(v1_coord, v2_coord)
+            grafo.agregarArista(v1, v2, distancia)
 
 def main():
     if (len(sys.argv) != 7):
@@ -25,11 +31,13 @@ def main():
     print "El aeropuerto esta en posicion " + aeropuerto
 
     grafo = Grafo()
+    grafo_con_distancias = Grafo()
 
     llenar_grafo(grafo)
-    
-    print "espia 1 hasta aeropuerto " + str(grafo.distanciaMinima(spy1, aeropuerto))
-    print "espia 2 hasta aeropuerto " + str(grafo.distanciaMinima(spy2, aeropuerto))
+    llenar_grafo(grafo_con_distancias, True)
+
+    print "espia 1 hasta aeropuerto " + str(grafo_con_distancias.distanciaMinima(spy1, aeropuerto))
+    print "espia 2 hasta aeropuerto " + str(grafo_con_distancias.distanciaMinima(spy2, aeropuerto))
 
 
 # TODO: Resolver...
