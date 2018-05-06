@@ -28,7 +28,7 @@ def main():
     
     print "El espia 1 esta en posicion " + spy1
     print "El espia 2 esta en posicion " + spy2
-    print "El aeropuerto esta en posicion " + aeropuerto
+    print "El aeropuerto esta en posicion " + aeropuerto + "\n"
 
     grafo = Grafo()
     grafo_con_distancias = Grafo()
@@ -36,11 +36,28 @@ def main():
     llenar_grafo(grafo)
     llenar_grafo(grafo_con_distancias, True)
 
+
+    # Punto 1
+    print "1) Resultado sin pesos en las aristas:"
+    print "espia 1 hasta aeropuerto " + str(grafo.bfs(spy1, aeropuerto))
+    print "espia 2 hasta aeropuerto " + str(grafo.bfs(spy2, aeropuerto))
+    print "\n"
+    # Punto 2
+    print "2) Resultado con pesos en las aristas:"
     print "espia 1 hasta aeropuerto " + str(grafo_con_distancias.distanciaMinima(spy1, aeropuerto))
     print "espia 2 hasta aeropuerto " + str(grafo_con_distancias.distanciaMinima(spy2, aeropuerto))
-
-
-# TODO: Resolver...
+    print "\n"
+    # Punto 4
+    # sin pesos
+    print "4)"
+    print "4)a) camino minimo sin pesos es:"
+    print "espia 1 hasta aeropuerto " + str(grafo.bfs(spy1, aeropuerto, True))
+    print "espia 2 hasta aeropuerto " + str(grafo.bfs(spy2, aeropuerto, True))
+    print "\n"
+    # con pesos
+    print "4)b) camino minimo con pesos es:"
+    print "espia 1 hasta aeropuerto " + str(grafo_con_distancias.recorridoMinimo(spy1, aeropuerto))
+    print "espia 2 hasta aeropuerto " + str(grafo_con_distancias.recorridoMinimo(spy2, aeropuerto))
 
 
 if __name__ == '__main__':
