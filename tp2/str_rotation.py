@@ -47,17 +47,17 @@ Busca por fuerza bruta rotaciones de word sobre text_search.
 Devuelve True si word es una rotacion de text_search
 Devuelve False en caso contrario
 """
-def brute_force_rotation(word, text_search):
+def brute_force_rotation(string1, string2):
 	# Asegurar que estamos comparando strings de misma longitud
-	assert(len(text_search) == len(word))
+	assert(len(string1) == len(string2))
 	if (DEBUG):
-		print "Verificando que " +str(word) + " es una rotacion de " + str(text_search)
-	deq = deque(word)
-	for i in xrange(len(text_search)):
+		print "Verificando que " +str(string2) + " es una rotacion de " + str(string1)
+	deq = deque(string2)
+	for i in xrange(len(string2)):
 		deq.rotate(1)
-		if ("".join(deq) == text_search):
+		if ("".join(deq) == string1):
 			if (DEBUG):
-				print str(word) + " con rotacion " + "".join(deq) + " == " + str(text_search)
+				print str(string2) + " con rotacion " + "".join(deq) + " == " + str(string1)
 			return True
 	return False
 
@@ -81,13 +81,14 @@ def compute_failure(word):
         j += 1
     return fail
 
-def kmp(word, text_search):
+def kmp(word, text_search, fail=None):
 	# returns the index in text_search of the first appearance of word or -1 if it's not found
 	# j -> Index in Word/Pattern
 	# i -> Index in Text
 	j = 0
 	m = len(word) - 1
-	fail = compute_failure(word)
+	if (not fail):
+		fail = compute_failure(word)
 
 	for i in range(len(text_search)):
 		while ((j > -1) and (text_search[i] != word[j])):
@@ -97,17 +98,18 @@ def kmp(word, text_search):
 		j += 1
 	return -1
 
-def brute_force_kmp_rotation(word, text_search):
+def brute_force_kmp_rotation(string1, string2):
 	# Asegurar que estamos comparando strings de misma longitud
-	assert(len(text_search) == len(word))
+	assert(len(string1) == len(string2))
 	if (DEBUG):
-		print "Verificando que " +str(word) + " es una rotacion de " + str(text_search)
-	deq = deque(word)
-	for i in range(len(text_search)):
+		print "Verificando que " +str(string2) + " es una rotacion de " + str(string1)
+	deq = deque(string2)
+	fail = compute_failure(string1)
+	for i in xrange(len(string2)):
 		deq.rotate(1)
-		if (kmp("".join(deq), text_search) != -1):
+		if (kmp(string1, "".join(deq), fail) != -1):
 			if (DEBUG):
-				print str(word) + " con rotacion " + "".join(deq) + " == " + str(text_search)
+				print str(string2) + " con rotacion " + "".join(deq) + " == " + str(string1)
 			return True
 	return False
 
@@ -116,12 +118,12 @@ def solve_by_brute_force_kmp(cases):
 		assert(brute_force_kmp_rotation(cases[key], key))
 		assert(not brute_force_kmp_rotation(NO_MATCH, key))
 
-def kmp_rotation(word, text_search):
-	assert(len(text_search) == len(word))
+def kmp_rotation(string1, string2):
+	assert(len(string1) == len(string2))
 	if (DEBUG):
 		print "Verificando que " +str(word) + " es una rotacion de " + str(text_search)
-	text = text_search * 2 #Sobra el ultimo caracter
-	if kmp(word, text) != -1:
+	text = string2 * 2 #Sobra el ultimo caracter
+	if kmp(string1, text) != -1:
 		return True
 	return False
 
