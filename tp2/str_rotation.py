@@ -3,7 +3,7 @@ from random import randint
 from collections import deque
 
 DIR = "words"
-DEBUG = True
+DEBUG = False
 # String that is not a rotation of any of the words
 NO_MATCH = "NOTMATCHST"
 
@@ -47,7 +47,7 @@ Busca por fuerza bruta rotaciones de word sobre text_search.
 Devuelve True si word es una rotacion de text_search
 Devuelve False en caso contrario
 """
-def brute_force(word, text_search):
+def brute_force_rotation(word, text_search):
 	# Asegurar que estamos comparando strings de misma longitud
 	assert(len(text_search) == len(word))
 	if (DEBUG):
@@ -66,11 +66,8 @@ def brute_force(word, text_search):
 
 def solve_by_brute_force(cases):
 	for key in cases.keys():
-		assert(brute_force(cases[key], key))
-		assert(not brute_force(NO_MATCH, key))
-
-
-
+		assert(brute_force_rotation(cases[key], key))
+		assert(not brute_force_rotation(NO_MATCH, key))
 
 def compute_failure(word):
 	# By convention, fail[0] = -1, meaning that if the first pattern/word character doesn't match,
@@ -103,16 +100,44 @@ def kmp(word, text_search):
 		j += 1
 	return -1
 
+def brute_force_kmp_rotation(word, text_search):
+	# Asegurar que estamos comparando strings de misma longitud
+	assert(len(text_search) == len(word))
+	if (DEBUG):
+		print "Verificando que " +str(word) + " es una rotacion de " + str(text_search)
+	deq = deque(word)
+	for i in range(len(text_search)):
+		deq.rotate(1)
+		if (kmp("".join(deq), text_search) != -1):
+			if (DEBUG):
+				print str(word) + " con rotacion " + "".join(deq) + " == " + str(text_search)
+			return True
+	return False
+
+def solve_by_brute_force_kmp(cases):
+	for key in cases.keys():
+		assert(brute_force_kmp_rotation(cases[key], key))
+		assert(not brute_force_kmp_rotation(NO_MATCH, key))
+
+def kmp_rotation(word, text_search):
+	assert(len(text_search) == len(word))
+	if (DEBUG):
+		print "Verificando que " +str(word) + " es una rotacion de " + str(text_search)
+	text = text_search * 2 #Sobra el ultimo caracter
+	if kmp(word, text) != -1:
+		return True
+	return False
 
 
 def solve_by_kmp(cases):
 	for key in cases.keys():
-		#assert(kmp(cases[key], key))
-		#assert(not kmp(NO_MATCH, key))
+		assert(kmp_rotation(cases[key], key))
+		assert(not kmp_rotation(NO_MATCH, key))
 
 def main():
 	cases = generate_cases()
 	solve_by_brute_force(cases)
+	solve_by_brute_force_kmp(cases)
 	solve_by_kmp(cases)
 
 
