@@ -52,9 +52,6 @@ def brute_force_rotation(word, text_search):
 	assert(len(text_search) == len(word))
 	if (DEBUG):
 		print "Verificando que " +str(word) + " es una rotacion de " + str(text_search)
-	if (text_search == word):
-		# Son la misma palabra
-		return True
 	deq = deque(word)
 	for i in xrange(len(text_search)):
 		deq.rotate(1)
