@@ -81,11 +81,14 @@ class Grafo(object):
 		prev[v1] = None
 		cola.put(v1)
 
+		if v1 == v2:
+			encontrado = True
+			prev[v1] = None
+
 		while (not cola.empty() and not encontrado):
 			vertice = cola.get()
 			vecinos = self.obtenerAristas(vertice)
 			for vecino in vecinos:
-				# Si esta en los visitados
 				if vecino not in visitados:
 					if con_camino:
 						prev[vecino] = vertice
@@ -104,7 +107,7 @@ class Grafo(object):
 			if con_camino:
 				camino = [v2]
 				vertice_actual = v2
-				while prev[vertice_actual] != None:
+				while prev[vertice_actual] != None and prev[vertice_actual] != vertice_actual:
 					camino += [prev[vertice_actual]]
 					vertice_actual = prev[vertice_actual]
 				camino.reverse()
