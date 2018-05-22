@@ -18,6 +18,14 @@ def llenar_grafo(grafo, con_distancias = False):
                 distancia = distance.euclidean(v1_coord, v2_coord)
             grafo.agregarArista(v1, v2, distancia)
 
+def obtener_camino_bfs(nodos, destino):
+    camino = [destino]
+    vertice_actual = destino
+    while nodos[vertice_actual] != None and nodos[vertice_actual] != vertice_actual:
+        camino.append(nodos[vertice_actual])
+        vertice_actual = nodos[vertice_actual]
+    return camino
+
 def main():
     if (len(sys.argv) != 7):
         raise Exception(
@@ -25,7 +33,7 @@ def main():
     spy1 = ' '.join([sys.argv[1], sys.argv[2]])
     spy2 = ' '.join([sys.argv[3], sys.argv[4]])
     aeropuerto = ' '.join([sys.argv[5], sys.argv[6]])
-    
+
     print "El espia 1 esta en posicion " + spy1
     print "El espia 2 esta en posicion " + spy2
     print "El aeropuerto esta en posicion " + aeropuerto + "\n"
@@ -36,11 +44,12 @@ def main():
     llenar_grafo(grafo)
     llenar_grafo(grafo_con_distancias, True)
 
-
     # Punto 1
+    nodos, distancias = grafo.bfs(aeropuerto)
     print "1) Resultado sin pesos en las aristas:"
-    print "espia 1 hasta aeropuerto " + str(grafo.bfs(spy1, aeropuerto))
-    print "espia 2 hasta aeropuerto " + str(grafo.bfs(spy2, aeropuerto))
+    print "Distancia espia 1 hasta aeropuerto: " + str(distancias[spy1])
+    print "Distancia espia 2 hasta aeropuerto: " + str(distancias[spy2])
+    print "Gana espia 1" if distancias[spy1] < distancias[spy2] else "Gana espia 2"
     print "\n"
     # Punto 2
     print "2) Resultado con pesos en las aristas:"
@@ -51,8 +60,8 @@ def main():
     # sin pesos
     print "4)"
     print "4)a) camino minimo sin pesos es:"
-    print "espia 1 hasta aeropuerto " + str(grafo.bfs(spy1, aeropuerto, True))
-    print "espia 2 hasta aeropuerto " + str(grafo.bfs(spy2, aeropuerto, True))
+    print "espia 1 hasta aeropuerto " + ', '.join(obtener_camino_bfs(nodos, spy1))
+    print "espia 2 hasta aeropuerto " + ', '.join(obtener_camino_bfs(nodos, spy2))
     print "\n"
     # con pesos
     print "4)b) camino minimo con pesos es:"
