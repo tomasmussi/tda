@@ -1,8 +1,11 @@
 import sys
 from greedy import Greedy
 from dinamica import Dinamica
+from time import sleep
 
 DEBUG = False
+USE_SLEEP = True
+DELAY = 0.5 # Medio segundo
 
 """
 Lee la grilla del juego de batalla naval
@@ -29,15 +32,15 @@ def read_grid(file):
 	return grid, ships
 
 
-def print_turn(grid, ships, iteration, score, targets = []):
-	grid_column = iteration % len(ships)
-	print "Turno: " + str(iteration)
-	print "Barcos: " + str(ships_alive(ships))
+def print_turn(grid, ships, iteration, cols, score, targets = []):
+	print("Turno: " + str(iteration))
+	print("Barcos: " + str(ships_alive(ships)))
 	for i in range(len(ships)):
-		print("Barco[" + str(i) + "] vida: " + str(ships[i]) + ", potencial danio: " + str(grid[i][grid_column]))
+		print("Barco[" + str(i) + "] vida: " + str(ships[i]) + ", potencial danio: " + str(grid[i][iteration % cols]))
 	for i in range(len(targets)):
 		print("Lanzadera[" + str(i) + "] blanco: " + str(targets[i]))
 	print("Puntos acumulados: " + str(score))
+	print("\n")
 
 
 def print_grid(grid, ships):
@@ -57,33 +60,36 @@ def game(grid, ships, strategy):
 	iteration = 0
 	finished = False
 	score = 0
-	grid_len = len(grid[0])
+	cols = len(grid[0])
+	rows = len(ships)
 	transpose = zip(*grid)
 	while (not finished):
 		# Busco targets
-		targets = strategy.targets(transpose[iteration % len(ships)], ships)
+		targets = strategy.targets(iteration % cols, transpose[iteration % cols], ships)
 		# Muestro el estado actual
-		print_turn(grid, ships, iteration, score, targets)
+		print_turn(grid, ships, iteration, cols, score, targets)
 
 		# Updates
 		# Do damage
 		for row in targets:
 			# Target[i] tiene el blanco del ship
 			if (DEBUG):
-				print str(iteration) + " % " + str(grid_len) + " = " + str(iteration % grid_len)
-				print "Grid[" + str(row) + "][" + str(iteration % grid_len) + "] = " + str(grid[row][iteration % grid_len])
-				print "Ship[" + str(row) + "] = " + str(ships[row])
-			ships[row] -= grid[row][iteration % grid_len]
+				print (str(iteration) + " % " + str(cols) + " = " + str(iteration % cols))
+				print ("Grid[" + str(row) + "][" + str(iteration % cols) + "] = " + str(grid[row][iteration % cols]))
+				print ("Ship[" + str(row) + "] = " + str(ships[row]))
+			ships[row] -= grid[row][iteration % cols]
 			if (DEBUG):
-				print "Ship[" + str(row) + "] = " + str(ships[row])
+				print ("Ship[" + str(row) + "] = " + str(ships[row]))
 
 		# Increment score
 		score += ships_alive(ships)
 
 		iteration += 1
 		finished = game_finished(ships)
-	print "finished\n\n"
-	print_turn(grid, ships, iteration, score, targets)
+		if (USE_SLEEP):
+			sleep(DELAY)
+	print("Finished!")
+	print_turn(grid, ships, iteration, cols, score, targets)
 
 
 

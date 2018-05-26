@@ -11,7 +11,7 @@ class Greedy(object):
 	Blancos seleccionados por las lanzaderas, aca es donde se ve implementada la estrategia del
 	algoritmo para seleccionar los barcos a los cuales hacer danio
 	"""
-	def targets(self, grid_column, ships):
+	def targets(self, column, grid_column, ships):
 		# Logica dummy para ver la simulacion funcionando
 		# Matar siempre el primer barco
 		targets = []
