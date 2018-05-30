@@ -1,4 +1,4 @@
-
+import numpy
 
 class Greedy(object):
 
@@ -12,20 +12,43 @@ class Greedy(object):
 	algoritmo para seleccionar los barcos a los cuales hacer danio
 	"""
 	def targets(self, column, grid_column, ships):
-		# Logica dummy para ver la simulacion funcionando
-		# Matar siempre el primer barco
+		# La estrategia de Greedo es en cada iteracion maximizar el danio posible que
+		# se le pueden hacer a los barcos. Es decir, mira la columna, y el que tenga el mayor
+		# danio posible sera el blanco de las lanzaderas
 		targets = []
-		for l in range(self.lanzaderas):
-			for i in range(len(ships)):
-				if (ships[i] > 0):
-					targets.append(i)
-					break
+		#print column
+		#print grid_column
+		#print ships
+		# Busco de mayor a menor danio posible en la grilla, los barcos a los cuales tirarles
+		indexes = numpy.argsort(-(numpy.array(grid_column)))
+		#print indexes
+		# Al principio danio hecho en el turno es 0
+		damage = [ 0 for i in range(len(ships))]
+		ship_it = 0
+		target_ship = indexes[ship_it]
+
+		# Moverse al primer barco no destruido
+		while (ships[target_ship] < 0 and ship_it < len(ships)):
+			# Si el barco esta destruido y no me fui de rango, buscar siguiente barco
+			ship_it += 1
+			target_ship = indexes[ship_it]
+
+		# Mientras tenga tiros para tirar Y barcos para hundir
+		lanz_it = 0
+		while (lanz_it < self.lanzaderas and ship_it < len(ships)):
+			# Ver si el danio hecho en este turno logra hundir el barco
+			if (damage[target_ship] < ships[target_ship]):
+				# Hago danio, pasar a la siguiente lanzadera
+				lanz_it += 1
+				damage[target_ship] += grid_column[target_ship]
+				targets.append(target_ship)
+			else:
+				# No hago danio, pasar al siguiente barco
+				ship_it += 1
+				target_ship = indexes[ship_it]
 		return targets
 
 
 	def __str__(self):
 		return "Greedo"
 
-
-	def prueba(self):
-		return self.lanzaderas
