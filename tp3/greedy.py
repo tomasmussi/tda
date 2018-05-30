@@ -31,7 +31,8 @@ class Greedy(object):
 		while (ships[target_ship] < 0 and ship_it < len(ships)):
 			# Si el barco esta destruido y no me fui de rango, buscar siguiente barco
 			ship_it += 1
-			target_ship = indexes[ship_it]
+			if (ship_it < len(ships)):
+				target_ship = indexes[ship_it]
 
 		# Mientras tenga tiros para tirar Y barcos para hundir
 		lanz_it = 0
@@ -45,8 +46,10 @@ class Greedy(object):
 			else:
 				# No hago danio, pasar al siguiente barco
 				ship_it += 1
-				target_ship = indexes[ship_it]
+				if (ship_it < len(ships)):
+					target_ship = indexes[ship_it]
 		return targets
+
 
 
 	def __str__(self):
