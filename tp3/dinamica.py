@@ -10,4 +10,4 @@ class Dinamica(object):
 		return self.lanzaderas
 
 	def __str__(self):
-		return "Dynamic"
+		return "Dinamico"

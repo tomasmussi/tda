@@ -101,8 +101,8 @@ def main():
 	if (len(sys.argv) != 4):
 		print("Parametros incorrectos, debe especificar grilla, estrategia y lanzaderas")
 		print("Estrategias reconocidas: 'g' Greedy,\t 'd' Dinamica")
-		print("Greedy: python battleship.py grilla.txt g 5")
-		print("Dinamica: python battleship.py grilla.txt d 4")
+		print("Greedy: python battleship.py grid.txt g 2")
+		print("Dinamica: python battleship.py grid.txt d 2")
 		exit(1)
 
 	grid, ships = read_grid(sys.argv[1]) # Archivo
