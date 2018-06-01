@@ -1,10 +1,26 @@
 import os.path
 import sys
+import csv
 from grafo import Grafo
 
 
 def read_net(file_net):
 	net = Grafo()
+	vertices = {}
+	edges = {}
+	with open(file_net, 'rb') as csvfile:
+		spamreader = csv.reader(csvfile, delimiter=' ')
+		for row in spamreader:
+			v1 = int(row[0])
+			v2 = int(row[1])
+			weight = int(row[2])
+			vertices[v1] = v1
+			vertices[v2] = v2
+			edges[(v1,v2)] = weight
+	for k in vertices.keys():
+		net.agregarVertice(k)
+	for t in edges.keys():
+		net.agregarArista(t[0], t[1], edges[t])
 	return net
 
 

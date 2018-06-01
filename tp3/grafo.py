@@ -29,7 +29,6 @@ class Grafo(object):
 		if v1 not in vertices or v2 not in vertices:
 			return False
 		vertices[v1][v2] = peso
-		vertices[v2][v1] = peso
 		return True
 
 	def borrarArista(self, v1, v2):
@@ -42,7 +41,6 @@ class Grafo(object):
 			return False
 		# Borro
 		vertices[v1].pop(v2)
-		vertices[v2].pop(v1)
 		return True
 
 	def obtenerPeso(self, v1, v2):
