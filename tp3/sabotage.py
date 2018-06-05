@@ -46,6 +46,10 @@ def main():
 	print("Usando archivo: " + file_net)
 
 	net = read_net(file_net)
+	path, bottleneck = net.dfs(0,1)
+	print(path)
+	print(bottleneck)
+
 
 
 if __name__ == '__main__':

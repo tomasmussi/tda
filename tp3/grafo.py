@@ -49,7 +49,7 @@ class Grafo(object):
 		if v1 not in vertices or v2 not in vertices:
 			return None
 		# Verifico que la arista exista
-		if v2 not in vertices[v1] or v1 not in vertices[v2]:
+		if (not self.hayArista(v1, v2)):
 			return None
 		return vertices[v1][v2]
 
@@ -61,7 +61,7 @@ class Grafo(object):
 	def hayArista(self, v1, v2):
 		if v1 not in self.vertices or v2 not in self.vertices:
 			return False
-		return v1 in self.vertices[v2]
+		return v2 in self.vertices[v1]
 
 
 	def bfs(self, v):
@@ -138,4 +138,44 @@ class Grafo(object):
 			return 0.0
 		distancia, anteriores = self.recorridoDijkstra(v1)
 		return distancia[v2]
+
+	def dfs(self, v1, v2):
+		visited = {}
+		for v in self.vertices:
+			visited[v] = False
+
+		previous = {}
+		stack = [v1]
+		finished = False
+
+		while stack and not finished:
+			w = stack.pop()
+			visited[w] = True
+			if (w == v2):
+				break
+			for neighbor in self.vertices[w]:
+				if (not visited[neighbor]):
+					previous[neighbor] = w
+					stack.append(neighbor)
+		path = []
+		w = v2
+
+		while w != v1:
+			path.append(w)
+			w = previous[w]
+		path.append(v1)
+		path.reverse()
+		limit = float('inf')
+		for i in range(len(path) - 1):
+			u = path[i]
+			w = path[i+1]
+			if (self.obtenerPeso(u,w) < limit):
+				limit = self.obtenerPeso(u,w)
+		return path, limit
+
+
+	def max_flow(self, source, target):
+		residual = Grafo()
+		return residual
+
 
