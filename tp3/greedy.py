@@ -2,16 +2,21 @@ import numpy
 
 class Greedy(object):
 
-	def __init__(self, grid, lanzaderas):
+	def __init__(self, grid, lanzaderas, ships):
 		# Estrategia Greedy no necesita conocer el mapa,
 		# solo necesita conocer el paso i y en base a eso actuar
+		self.transpose = zip(*grid)
 		self.lanzaderas = lanzaderas
+		self.ships = ships
 
 	"""
 	Blancos seleccionados por las lanzaderas, aca es donde se ve implementada la estrategia del
 	algoritmo para seleccionar los barcos a los cuales hacer danio
 	"""
-	def targets(self, column, grid_column, ships):
+	def targets(self, turn, ships):
+
+		column = turn % len(self.transpose)
+		grid_column = self.transpose[column]
 		# La estrategia de Greedo es en cada iteracion maximizar el danio posible que
 		# se le pueden hacer a los barcos. Es decir, mira la columna, y el que tenga el mayor
 		# danio posible sera el blanco de las lanzaderas
@@ -37,7 +42,7 @@ class Greedy(object):
 		# Mientras tenga tiros para tirar Y barcos para hundir
 		lanz_it = 0
 		while (lanz_it < self.lanzaderas and ship_it < len(ships)):
-			# Ver si el danio hecho en este turno logra hundir el barco
+			# Ver si el danio hecho en este turno ya hunde el barco
 			if (damage[target_ship] < ships[target_ship]):
 				# Hago danio, pasar a la siguiente lanzadera
 				lanz_it += 1
@@ -54,4 +59,3 @@ class Greedy(object):
 
 	def __str__(self):
 		return "Greedo"
-

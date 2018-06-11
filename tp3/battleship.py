@@ -5,7 +5,7 @@ from time import sleep
 
 DEBUG = False
 USE_SLEEP = True
-DELAY = 0.5 # Medio segundo
+DELAY = 0 # Medio segundo
 
 """
 Lee la grilla del juego de batalla naval
@@ -62,10 +62,9 @@ def game(grid, ships, strategy):
 	score = 0
 	cols = len(grid[0])
 	rows = len(ships)
-	transpose = zip(*grid)
 	while (not finished):
 		# Busco targets
-		targets = strategy.targets(iteration % cols, transpose[iteration % cols], ships)
+		targets = strategy.targets(iteration, ships)
 		# Muestro el estado actual
 		print_turn(grid, ships, iteration, cols, score, targets)
 
@@ -108,9 +107,9 @@ def main():
 	grid, ships = read_grid(sys.argv[1]) # Archivo
 	lanzaderas = int(sys.argv[3])
 	if (sys.argv[2] == 'g'):
-		strategy = Greedy(grid, lanzaderas)
+		strategy = Greedy(grid, lanzaderas, ships)
 	elif (sys.argv[2] == 'd'):
-		strategy = Dinamica(grid, lanzaderas)
+		strategy = Dinamica(grid, lanzaderas, ships)
 	else:
 		print("Estrategia no reconocida, utilice 'g' para Greedy y 'd' para Dinamica")
 		exit(2)
