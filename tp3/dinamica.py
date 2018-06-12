@@ -1,6 +1,8 @@
 from itertools import combinations_with_replacement as combinations
 import sys
 
+M = {}
+
 class Dinamica(object):
 
 	def __init__(self, grid, lanzaderas, ships):
@@ -8,7 +10,9 @@ class Dinamica(object):
 		self.lanzaderas = lanzaderas
 		self.ships = ships
 
-		print self.min_points(self.ships, 0, 0, float('inf'))
+
+
+		print self.min_points_dp(self.ships, 0, 0)
 		sys.exit(0)
 
 
@@ -19,18 +23,31 @@ class Dinamica(object):
 			updated_ships[ship_index] -= self.grid[ship_index][turn % len(self.grid[0])]
 		return updated_ships
 
-	def min_points(self, ships, turn, points, total_min):
-		print ships, turn, points
+	def min_points_recurrent(self, ships, turn, points, total_min):
 		if all(x <= 0 for x in ships):
 			return points
 		ships_alive_index = [i for i in range(len(ships)) if ships[i] > 0]
 		for p in combinations(ships_alive_index, self.lanzaderas): #Lanzaderas deberian poder disparar al mismo barco
 			updated_ships = self.update_damage(ships, p, turn)
 			turn_points = sum(1 for s in updated_ships if s > 0)
-			next_min = self.min_points(updated_ships, turn+1, points+turn_points, total_min)
-			print turn, next_min, total_min
+			next_min = self.min_points_recurrent(updated_ships, turn+1, points+turn_points, total_min)
 			total_min = min(total_min, next_min)
 		return total_min
+
+	def min_points_dp(self, ships, turn, points):
+		ships = tuple(ships)
+		if all(x <= 0 for x in ships):
+			return points
+		if (ships,points) not in M:
+			local_min = float('inf')
+			ships_alive_index = [i for i in range(len(ships)) if ships[i] > 0]
+			for p in combinations(ships_alive_index, self.lanzaderas): #Lanzaderas deberian poder disparar al mismo barco
+				updated_ships = self.update_damage(ships, p, turn)
+				turn_points = sum(1 for s in updated_ships if s > 0)
+				next_min = self.min_points_dp(updated_ships, turn+1, points+turn_points)
+				local_min = min(local_min, next_min)
+			M[(ships,points)] = local_min
+		return M[(ships,points)]
 
 	"""
 	Blancos seleccionados por las lanzaderas, aca es donde se ve implementada la estrategia del
