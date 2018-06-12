@@ -80,7 +80,7 @@ class Grafo(object):
 			vertice = cola.get()
 			vecinos = self.obtenerAristas(vertice)
 			for vecino in vecinos:
-				if vecino not in visitados:
+				if vecino not in visitados and self.obtenerPeso(vertice, vecino) > 0:
 					prev[vecino] = vertice
 					distancias[vecino] = distancias[vertice] + 1
 					visitados[vecino] = True
@@ -114,6 +114,38 @@ class Grafo(object):
 
 
 		return distancia, anterior
+
+	def ford_fulkerson(self, fuente, sumidero):
+		vertices = self.vertices
+
+		flujo_maximo = 0
+
+		path, distancias = self.bfs(fuente)
+		while sumidero in distancias.keys() and distancias[sumidero] != float('inf'):
+
+			# Busco la capacidad maxima
+			flujo_parcial = float("Inf")
+			s = sumidero
+			while(s !=  fuente):
+				flujo_parcial = min (flujo_parcial, self.obtenerPeso(path[s],s))
+				s = path[s]
+
+			flujo_maximo +=  flujo_parcial
+
+			# Actualizo los flujos
+			v = sumidero
+			while(v !=  fuente):
+				u = path[v]
+				vertices[u][v] -= flujo_parcial
+				
+				if u not in vertices[v].keys():
+					vertices[v][u] = flujo_parcial
+				else:
+					vertices[v][u] += flujo_parcial
+				v = path[v]
+		
+			path, distancias = self.bfs(fuente)
+		return flujo_maximo
 
 
 	def recorridoMinimo(self, v1, v2):
@@ -174,7 +206,7 @@ class Grafo(object):
 		return path, limit
 
 
-	def max_flow(self, source, target):
+	def flujo_maximo(self, fuente, target):
 		residual = Grafo()
 		return residual
 

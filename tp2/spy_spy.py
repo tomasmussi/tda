@@ -27,21 +27,22 @@ def obtener_camino_bfs(nodos, destino):
     return camino
 
 def main():
-    if (len(sys.argv) != 7):
-        raise Exception(
-            'Debe ingresar las coordenadas x,y de los espias y del aeropuerto')
-    spy1 = ' '.join([sys.argv[1], sys.argv[2]])
-    spy2 = ' '.join([sys.argv[3], sys.argv[4]])
-    aeropuerto = ' '.join([sys.argv[5], sys.argv[6]])
+    # if (len(sys.argv) != 7):
+    #     raise Exception(
+    #         'Debe ingresar las coordenadas x,y de los espias y del aeropuerto')
+    spy1 = '1 2'
+    spy2 = '3 4'
+    aeropuerto = '5 6'
 
-    print "El espia 1 esta en posicion " + spy1
-    print "El espia 2 esta en posicion " + spy2
-    print "El aeropuerto esta en posicion " + aeropuerto + "\n"
+    # print "El espia 1 esta en posicion " + spy1
+    # print "El espia 2 esta en posicion " + spy2
+    # print "El aeropuerto esta en posicion " + aeropuerto + "\n"
 
     grafo = Grafo()
     grafo_con_distancias = Grafo()
 
     llenar_grafo(grafo)
+    len(grafo.vertices.keys)
     llenar_grafo(grafo_con_distancias, True)
 
     # Punto 1
