@@ -10,7 +10,7 @@ NO_MATCH = "NOTMATCHST"
 TEST_LIST = ["OPENSESAME","ITALIANICE","ONEATATIME","EVENSTEVEN","ALOHASTATE","ANNABELLEE",
 "OVALOFFICE","SOURGRAPES","ADAMSAPPLE","DONQUIXOTE","EASTORANGE","EASYSTREET","EISENHOWER",
 "IVORYTOWER","OPERASERIA","PAGETURNER","PAPERTIGER","PIRATESHIP","RABBITEARS","SANTACLAUS",
-"THENATURAL", "ABRACADABR"]
+"THENATURAL", "ABRACADABR", "BANANANANA"]
 
 def pruebas():
 	st = "hola"
@@ -85,6 +85,7 @@ def kmp(word, text_search, fail=None):
 	# returns the index in text_search of the first appearance of word or -1 if it's not found
 	# j -> Index in Word/Pattern
 	# i -> Index in Text
+	assert(not len(word) > len(text_search))
 	j = 0
 	m = len(word) - 1
 	if (not fail):
