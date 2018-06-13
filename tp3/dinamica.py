@@ -17,7 +17,6 @@ class Dinamica(object):
 		solution = self.min_total_turns(matrix)
 
 		self.targets_order = solution[0][0]
-		print self.targets_order
 		self.target_index = 0
 
 
@@ -27,16 +26,20 @@ class Dinamica(object):
 		memory = {}
 		for i in range(len(self.grid)):
 			for j in range(self.columns):
-				memory[((i,),j)] = matrix[i][j]
+				memory[((i,),j)] = (matrix[i][j], len(self.ships) * matrix[i][j] - 1)
 		for number_of_ships in range(2,len(self.ships)+1): #cantidad de barcos
 			for p in permutations(ships_index, number_of_ships):
 				for c in range(self.columns):
-					turns_first = memory[((p[0],),c)]
-					memory[(p,c)] = turns_first + memory[(p[1:],turns_first % self.columns)]
+					rest = p[:-1]
+					last = p[-1:]
+					turns_rest, points_rest = memory[(rest,c)]
+					turns_last = memory[(last,(c + turns_rest) % self.columns)][0] #Esta bien la c?
+					points_last = turns_last * (len(self.ships) - len(rest)) - 1
+					memory[(p,c)] = (turns_rest + turns_last, points_rest + points_last)
 					if (number_of_ships == len(self.ships)): #Para el caso donde estan todos los barcos, solo me interesa la primera columna
 						break
 		possible_solutions = [(k,v) for k,v in memory.iteritems() if len(k[0]) == len(ships_index)]
-		best_solution = reduce(lambda x,y: x if x[1] < y[1] else y, possible_solutions)
+		best_solution = reduce(lambda x,y: x if x[1][1] < y[1][1] else y, possible_solutions)
 		return best_solution
 		#for elem in sorted(memory.iteritems()):
 			#print elem
