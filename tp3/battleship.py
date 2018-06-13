@@ -5,7 +5,7 @@ from time import sleep
 
 DEBUG = False
 USE_SLEEP = True
-DELAY = 0 # Medio segundo
+DELAY = 0.5 # Medio segundo
 
 """
 Lee la grilla del juego de batalla naval
