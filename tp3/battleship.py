@@ -1,7 +1,9 @@
 import sys
+import numpy as np
 from greedy import Greedy
 from dinamica import Dinamica
 from time import sleep
+from collections import deque
 
 DEBUG = False
 USE_SLEEP = True
@@ -95,8 +97,19 @@ def print_board(grid, ships):
 		print str(ships[i]) + " : " + str(grid[i])
 	print("\n\n")
 
+
 def realocate_ships(grid):
-	return grid
+	new_grid = []
+	indexes = []
+	for i in range(len(grid[0])):
+		# Para cada barco, busco el minimo
+		min_index = np.argmin(grid[i])
+		# Estructura auxiliar para rotar el array
+		queue = deque(grid[i])
+		queue.rotate(-min_index)
+		new_grid.append(list(queue))
+
+	return new_grid
 
 """
 Main de la battala naval
