@@ -45,9 +45,19 @@ def print_turn(grid, ships, iteration, cols, score, targets = []):
 	print("\n")
 
 
-def print_grid(grid, ships):
+def print_grid(grid, ships, targets, column):
 	# Punto opcional para imprimir turno a turno el avance del juego
-	pass
+	correr = "      "
+	for i in range(column):
+		correr += "   "
+	print correr + "|"
+	print correr + "|"
+	print correr + "|"
+	for i in range(len(ships)):
+		marks = ""
+		for i in range(targets.count(i)):
+			marks += " X "
+		print str(ships[i]) + " : " + str(grid[i]) + marks
 
 def ships_alive(ships):
 	return reduce(lambda count, i: count + (i > 0), ships, 0)
@@ -67,6 +77,7 @@ def game(grid, ships, strategy):
 	while (not finished):
 		# Busco targets
 		targets = strategy.targets(iteration, ships)
+		print_grid(grid, ships, targets, iteration % cols)
 		# Muestro el estado actual
 		print_turn(grid, ships, iteration, cols, score, targets)
 
@@ -125,10 +136,13 @@ def main():
 
 	grid, ships = read_grid(sys.argv[1]) # Archivo
 	lanzaderas = int(sys.argv[3])
+	new_grid = realocate_ships(grid)
 	if (sys.argv[2] == 'g'):
 		strategy = Greedy(grid, lanzaderas, ships)
+		new_strategy = Greedy(new_grid, lanzaderas, ships)
 	elif (sys.argv[2] == 'd'):
 		strategy = Dinamica(grid, lanzaderas, ships)
+		new_strategy = Dinamica(new_grid, lanzaderas, ships)
 	else:
 		print("Estrategia no reconocida, utilice 'g' para Greedy y 'd' para Dinamica")
 		exit(2)
@@ -140,13 +154,13 @@ def main():
 	game(grid, list(ships), strategy)
 
 	print("Utilizando estrategia para reubicar barcos para que duren mas\n\n")
-	new_grid = realocate_ships(grid)
+
 	print("Antes")
 	print_board(grid, ships)
 	print("Reubicados")
 	print_board(new_grid, ships)
 	sleep(3)
-	game(new_grid, list(ships), strategy)
+	game(new_grid, list(ships), new_strategy)
 
 
 if __name__ == '__main__':
