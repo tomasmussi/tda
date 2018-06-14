@@ -90,7 +90,13 @@ def game(grid, ships, strategy):
 	print("Finished!")
 	print_turn(grid, ships, iteration, cols, score, targets)
 
+def print_board(grid, ships):
+	for i in range(len(ships)):
+		print str(ships[i]) + " : " + str(grid[i])
+	print("\n\n")
 
+def realocate_ships(grid):
+	return grid
 
 """
 Main de la battala naval
@@ -116,12 +122,18 @@ def main():
 
 	print("Configuracion de juego:")
 	print("Estrategia " + str(strategy) + " con " + str(strategy.lanzaderas) + " lanzaderas ")
+	print_board(grid, ships)
 
-	for i in range(len(ships)):
-		print str(ships[i]) + " : " + str(grid[i])
-	print("\n\n")
+	game(grid, list(ships), strategy)
 
-	game(grid, ships, strategy)
+	print("Utilizando estrategia para reubicar barcos para que duren mas\n\n")
+	new_grid = realocate_ships(grid)
+	print("Antes")
+	print_board(grid, ships)
+	print("Reubicados")
+	print_board(new_grid, ships)
+	sleep(3)
+	game(new_grid, list(ships), strategy)
 
 
 if __name__ == '__main__':
