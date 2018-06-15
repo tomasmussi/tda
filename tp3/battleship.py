@@ -47,17 +47,32 @@ def print_turn(grid, ships, iteration, cols, score, targets = []):
 
 def print_grid(grid, ships, targets, column):
 	# Punto opcional para imprimir turno a turno el avance del juego
-	correr = "      "
+	line_separator = "------"
+	for i in range(len(grid[0])):
+		line_separator += "------"
+	correr = "          "
 	for i in range(column):
-		correr += "   "
+		correr += "      "
 	print correr + "|"
 	print correr + "|"
 	print correr + "|"
 	for i in range(len(ships)):
 		marks = ""
-		for i in range(targets.count(i)):
+		for k in range(targets.count(i)):
 			marks += " X "
-		print str(ships[i]) + " : " + str(grid[i]) + marks
+		print line_separator
+		line = ""
+		for j in range(len(grid[i])):
+			line += "| " + '{:3}'.format(grid[i][j])
+			if j != len(grid[i])-1:
+				line += " "
+			else:
+				line += "|"
+		print '{:3}'.format(ships[i]) + " : " + line  + marks
+	print line_separator
+	print correr + "|"
+	print correr + "|"
+	print correr + "|"
 
 def ships_alive(ships):
 	return reduce(lambda count, i: count + (i > 0), ships, 0)
@@ -112,7 +127,7 @@ def print_board(grid, ships):
 def realocate_ships(grid):
 	new_grid = []
 	indexes = []
-	for i in range(len(grid[0])):
+	for i in range(len(grid)):
 		# Para cada barco, busco el minimo
 		min_index = np.argmin(grid[i])
 		# Estructura auxiliar para rotar el array
