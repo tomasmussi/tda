@@ -28,7 +28,7 @@ def read_net(file_net):
 def protection_method_one(net):
 	original_net = copy.deepcopy(net)
 	# Calculo ford fulkerson
-	print "Flujo maximo: " + str(net.ford_fulkerson(1,4))
+	print "Flujo maximo: " + str(net.ford_fulkerson(0, 1))
 
 	# Paso los grafos a una forma "plana", ej: grafo[1][2] = 3 <=> grafo[1,2] = 3
 
@@ -40,9 +40,19 @@ def protection_method_one(net):
 	delta_flux = { x: original_net_plain[x] - residual_net_plain[x] for x in original_net_plain if x in residual_net_plain }
 	# Ordeno las diferencias
 	delta_flux = sorted(delta_flux.items(), key=operator.itemgetter(1))
+	first_edge, first_edge_flux = list(delta_flux[-1][0]), delta_flux[-1][1]
+	second_edge, second_edge_flux = list(delta_flux[-2][0]), delta_flux[-2][1]
 
-	print "Custodiar el: " + str(delta_flux[-1][0]) + ' que lleva un flujo de ' + str(delta_flux[-1][1]) + \
-			' y el: ' + str(delta_flux[-2][0]) + ' que lleva un flujo de ' +  str(delta_flux[-2][1])
+	print "Custodiar el: " + str(first_edge) + ' que lleva un flujo de ' + str(first_edge_flux) + \
+			' y el: ' + str(second_edge) + ' que lleva un flujo de ' +  str(second_edge_flux)
+
+	net_without_maximum_flow_edge = copy.deepcopy(original_net)
+	net_without_second_maximum_flow_edge = copy.deepcopy(original_net)
+	net_without_maximum_flow_edge.borrarArista(first_edge[0], first_edge[1])
+	net_without_second_maximum_flow_edge.borrarArista(second_edge[0], second_edge[1])
+	
+	print "Luego el flujo sin la primer arista es: " + str(net_without_maximum_flow_edge.ford_fulkerson(0, 1))
+	print " y finalmente el flujo sin la segunda arista es: " + str(net_without_second_maximum_flow_edge.ford_fulkerson(0, 1))
 
 def main():
 	if (len(sys.argv) == 1):

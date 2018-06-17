@@ -33,4 +33,4 @@ diferencia_flujos = {x: grafo_viejo_plano[x] - grafo_residual_plano[x] for x in 
 diferencia_flujos = sorted(diferencia_flujos.items(), key=operator.itemgetter(1))
 
 print "Custodiar el: " + str(diferencia_flujos[-1][0]) + ' que lleva un flujo de ' + str(diferencia_flujos[-1][1]) + \
-     ' y el: ' + str(diferencia_flujos[-2][0]) + ' que lleva un flujo de ' +  str(diferencia_flujos[-2][1])
+    ' y el: ' + str(diferencia_flujos[-2][0]) + ' que lleva un flujo de ' +  str(diferencia_flujos[-2][1])

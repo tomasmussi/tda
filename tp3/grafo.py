@@ -37,7 +37,7 @@ class Grafo(object):
 		if v1 not in vertices or v2 not in vertices:
 			return False
 		# Verifico que la arista exista
-		if v2 not in vertices[v1] or v1 not in vertices[v2]:
+		if v2 not in vertices[v1]:
 			return False
 		# Borro
 		vertices[v1].pop(v2)
