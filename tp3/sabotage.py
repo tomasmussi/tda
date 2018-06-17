@@ -1,7 +1,9 @@
 import os.path
 import sys
 import csv
+import copy
 from grafo import Grafo
+import operator
 
 
 def read_net(file_net):
@@ -23,6 +25,24 @@ def read_net(file_net):
 		net.agregarArista(t[0], t[1], edges[t])
 	return net
 
+def protection_method_one(net):
+	original_net = copy.deepcopy(net)
+	# Calculo ford fulkerson
+	print "Flujo maximo: " + str(net.ford_fulkerson(1,4))
+
+	# Paso los grafos a una forma "plana", ej: grafo[1][2] = 3 <=> grafo[1,2] = 3
+
+	# Agrega complejidad 2M = cantidad de aristas mas dos veces para analizar el grafo de forma mas "amigable"
+	original_net_plain = original_net.convertir_plano()
+	residual_net_plain = net.convertir_plano()
+
+	# Calculo diferencia entre flujos
+	delta_flux = { x: original_net_plain[x] - residual_net_plain[x] for x in original_net_plain if x in residual_net_plain }
+	# Ordeno las diferencias
+	delta_flux = sorted(delta_flux.items(), key=operator.itemgetter(1))
+
+	print "Custodiar el: " + str(delta_flux[-1][0]) + ' que lleva un flujo de ' + str(delta_flux[-1][1]) + \
+			' y el: ' + str(delta_flux[-2][0]) + ' que lleva un flujo de ' +  str(delta_flux[-2][1])
 
 def main():
 	if (len(sys.argv) == 1):
@@ -46,9 +66,9 @@ def main():
 	print("Usando archivo: " + file_net)
 
 	net = read_net(file_net)
-	path, bottleneck = net.dfs(0,1)
-	print(path)
-	print(bottleneck)
+	# Hago una copia porque adentro la rompo toda
+	protection_method_one(copy.deepcopy(net))
+
 
 
 

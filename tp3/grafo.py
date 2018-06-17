@@ -63,6 +63,12 @@ class Grafo(object):
 			return False
 		return v2 in self.vertices[v1]
 
+	def convertir_plano(self):
+		grafo_plano = {}
+		for key in self.vertices:
+			for subkey in self.vertices[key]:
+				grafo_plano[key, subkey] = self.vertices[key][subkey]
+		return grafo_plano
 
 	def bfs(self, v):
 		visitados = {}
@@ -146,7 +152,6 @@ class Grafo(object):
 		
 			path, distancias = self.bfs(fuente)
 		return flujo_maximo
-
 
 	def recorridoMinimo(self, v1, v2):
 		if v1 == v2:

@@ -24,15 +24,8 @@ print "Flujo maximo" + str(grafo.ford_fulkerson(1,4))
 # Paso los grafos a una forma "plana", ej: grafo[1][2] = 3 <=> grafo[1,2] = 3
 
 # Agrega complejidad 2M = cantidad de aristas mas dos veces para analizar el grafo de forma mas "amigable"
-grafo_viejo_plano = {}
-grafo_residual_plano = {}
-for key in grafo_viejo.vertices:
-    for subkey in grafo_viejo.vertices[key]:
-        grafo_viejo_plano[key, subkey] = grafo_viejo.vertices[key][subkey]
-
-for key in grafo.vertices:
-    for subkey in grafo.vertices[key]:
-        grafo_residual_plano[key, subkey] = grafo.vertices[key][subkey]
+grafo_viejo_plano = grafo_viejo.convertir_plano()
+grafo_residual_plano = grafo.convertir_plano()
 
 # Calculo diferencia entre flujos
 diferencia_flujos = {x: grafo_viejo_plano[x] - grafo_residual_plano[x] for x in grafo_viejo_plano if x in grafo_residual_plano}
