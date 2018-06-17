@@ -50,7 +50,7 @@ def protection_method_one(net):
 	net_without_second_maximum_flow_edge = copy.deepcopy(original_net)
 	net_without_maximum_flow_edge.borrarArista(first_edge[0], first_edge[1])
 	net_without_second_maximum_flow_edge.borrarArista(second_edge[0], second_edge[1])
-	
+
 	print "Luego el flujo sin la primer arista es: " + str(net_without_maximum_flow_edge.ford_fulkerson(0, 1))
 	print " y finalmente el flujo sin la segunda arista es: " + str(net_without_second_maximum_flow_edge.ford_fulkerson(0, 1))
 
