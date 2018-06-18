@@ -37,7 +37,7 @@ class Grafo(object):
 		if v1 not in vertices or v2 not in vertices:
 			return False
 		# Verifico que la arista exista
-		if v2 not in vertices[v1] or v1 not in vertices[v2]:
+		if v2 not in vertices[v1]:
 			return False
 		# Borro
 		vertices[v1].pop(v2)
@@ -63,6 +63,12 @@ class Grafo(object):
 			return False
 		return v2 in self.vertices[v1]
 
+	def convertir_plano(self):
+		grafo_plano = {}
+		for key in self.vertices:
+			for subkey in self.vertices[key]:
+				grafo_plano[key, subkey] = self.vertices[key][subkey]
+		return grafo_plano
 
 	def bfs(self, v):
 		visitados = {}
@@ -80,7 +86,7 @@ class Grafo(object):
 			vertice = cola.get()
 			vecinos = self.obtenerAristas(vertice)
 			for vecino in vecinos:
-				if vecino not in visitados:
+				if vecino not in visitados and self.obtenerPeso(vertice, vecino) > 0:
 					prev[vecino] = vertice
 					distancias[vecino] = distancias[vertice] + 1
 					visitados[vecino] = True
@@ -115,6 +121,37 @@ class Grafo(object):
 
 		return distancia, anterior
 
+	def ford_fulkerson(self, fuente, sumidero):
+		vertices = self.vertices
+
+		flujo_maximo = 0
+
+		path, distancias = self.bfs(fuente)
+		while sumidero in distancias.keys() and distancias[sumidero] != float('inf'):
+
+			# Busco la capacidad maxima
+			flujo_parcial = float("Inf")
+			s = sumidero
+			while(s !=  fuente):
+				flujo_parcial = min (flujo_parcial, self.obtenerPeso(path[s],s))
+				s = path[s]
+
+			flujo_maximo +=  flujo_parcial
+
+			# Actualizo los flujos
+			v = sumidero
+			while(v !=  fuente):
+				u = path[v]
+				vertices[u][v] -= flujo_parcial
+				
+				if u not in vertices[v].keys():
+					vertices[v][u] = flujo_parcial
+				else:
+					vertices[v][u] += flujo_parcial
+				v = path[v]
+		
+			path, distancias = self.bfs(fuente)
+		return flujo_maximo
 
 	def recorridoMinimo(self, v1, v2):
 		if v1 == v2:
@@ -172,10 +209,3 @@ class Grafo(object):
 			if (self.obtenerPeso(u,w) < limit):
 				limit = self.obtenerPeso(u,w)
 		return path, limit
-
-
-	def max_flow(self, source, target):
-		residual = Grafo()
-		return residual
-
-
