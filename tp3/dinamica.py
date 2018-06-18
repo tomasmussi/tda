@@ -12,21 +12,15 @@ class Dinamica(object):
 		self.lanzaderas = lanzaderas
 		self.ships = ships
 
-
-		matrix = self.compute_turns_to_kill_matrix()
-		solution = self.min_total_turns(matrix)
-
+		solution = self.min_total_turns()
 		self.targets_order = solution[0][0]
 		self.target_index = 0
 
 
 
-	def min_total_turns(self, matrix):
+	def min_total_turns(self):
+		memory = self.compute_turns_to_kill()
 		ships_index = [i for i in range(len(self.ships))]
-		memory = {}
-		for i in range(len(self.grid)):
-			for j in range(self.columns):
-				memory[((i,),j)] = (matrix[i][j], len(self.ships) * matrix[i][j] - 1)
 		for number_of_ships in range(2,len(self.ships)+1): #cantidad de barcos
 			for p in permutations(ships_index, number_of_ships):
 				for c in range(self.columns):
@@ -46,8 +40,8 @@ class Dinamica(object):
 
 
 
-	def compute_turns_to_kill_matrix(self):
-		matrix = np.empty([len(self.grid), self.columns], dtype=int)
+	def compute_turns_to_kill(self):
+		memory = {}
 		for i in range(len(self.grid)): #ships
 			suma_fila = sum(self.grid[i][j] for j in range(self.columns))
 			factor = 0
@@ -64,8 +58,8 @@ class Dinamica(object):
 					k = (j + turns) % self.columns
 					ship -= self.lanzaderas * self.grid[i][k]
 					turns += 1
-				matrix[i][j] = turns
-		return matrix
+				memory[((i,),j)] = (turns, len(self.ships) * turns - 1)
+		return memory
 
 
 	def update_damage(self, ships, p, turn):
@@ -74,31 +68,32 @@ class Dinamica(object):
 			updated_ships[ship_index] -= self.grid[ship_index][turn % self.columns]
 		return updated_ships
 
-	def min_points_recurrent(self, ships, turn, points, total_min):
+	def min_points_recurrent(self, ships, turn):
 		if all(x <= 0 for x in ships):
-			return points
+			return 0
+		local_min = float('inf')
 		ships_alive_index = [i for i in range(len(ships)) if ships[i] > 0]
-		for p in combinations_with_replacement(ships_alive_index, self.lanzaderas): #Lanzaderas deberian poder disparar al mismo barco
+		for p in combinations_with_replacement(ships_alive_index, self.lanzaderas):
 			updated_ships = self.update_damage(ships, p, turn)
 			turn_points = sum(1 for s in updated_ships if s > 0)
-			next_min = self.min_points_recurrent(updated_ships, turn+1, points+turn_points, total_min)
-			total_min = min(total_min, next_min)
-		return total_min
+			next_min = self.min_points_recurrent(updated_ships, turn+1)
+			local_min = min(local_min, next_min + turn_points)
+		return local_min
 
-	def min_points_dp(self, ships, turn, points):
+	def min_points_dp(self, ships, turn):
 		ships = tuple(ships)
 		if all(x <= 0 for x in ships):
-			return points
-		if (ships,points) not in M:
+			return 0
+		if (ships, turn % self.columns) not in M:
 			local_min = float('inf')
 			ships_alive_index = [i for i in range(len(ships)) if ships[i] > 0]
-			for p in combinations_with_replacement(ships_alive_index, self.lanzaderas): #Lanzaderas deberian poder disparar al mismo barco
+			for p in combinations_with_replacement(ships_alive_index, self.lanzaderas):
 				updated_ships = self.update_damage(ships, p, turn)
 				turn_points = sum(1 for s in updated_ships if s > 0)
-				next_min = self.min_points_dp(updated_ships, turn+1, points+turn_points)
-				local_min = min(local_min, next_min)
-			M[(ships,points)] = local_min
-		return M[(ships,points)]
+				next_min = self.min_points_dp(updated_ships, turn+1)
+				local_min = min(local_min, next_min + turn_points)
+			M[(ships, turn % self.columns)] = local_min
+		return M[(ships, turn % self.columns)]
 
 
 	"""
