@@ -209,10 +209,3 @@ class Grafo(object):
 			if (self.obtenerPeso(u,w) < limit):
 				limit = self.obtenerPeso(u,w)
 		return path, limit
-
-
-	def flujo_maximo(self, fuente, target):
-		residual = Grafo()
-		return residual
-
-
